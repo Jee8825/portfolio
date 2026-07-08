@@ -57,17 +57,20 @@ export const profile = {
     "Agentic systems, LLM memory architectures, and multi-agent backends — from Bayesian confidence scoring to human-in-the-loop financial automation.",
   location: "India",
   email: "anandhjeeva88255@gmail.com",
-  // TODO: replace with your real resume file in /public and update path, or an external link
-  resumeUrl: "/resume.pdf",
+  // Résumé (Google Drive). Swap for a /public PDF anytime if you prefer self-hosting.
+  resumeUrl: "https://drive.google.com/file/d/1cB9VpU0yRXDs54NkKsfKE01yZ_iakPka/view?usp=sharing",
   available: true,
   availabilityText: "Open to AI / ML engineering internships & roles",
 };
 
 export const socials: Social[] = [
-  // TODO: replace the placeholder hrefs with your real profile URLs
-  { label: "GitHub", href: "https://github.com/", icon: "github" },
-  { label: "LinkedIn", href: "https://linkedin.com/in/", icon: "linkedin" },
-  { label: "Hugging Face", href: "https://huggingface.co/", icon: "huggingface" },
+  { label: "GitHub", href: "https://github.com/Jee8825", icon: "github" },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/jeevanandh-b-ai-ds-605852333",
+    icon: "linkedin",
+  },
+  { label: "Hugging Face", href: "https://huggingface.co/Jee0088", icon: "huggingface" },
   { label: "Email", href: "mailto:anandhjeeva88255@gmail.com", icon: "mail" },
 ];
 
