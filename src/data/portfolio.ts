@@ -290,5 +290,5 @@ export const seo = {
     "RAG",
     "Machine Learning",
   ],
-  url: "https://your-domain.vercel.app", // TODO: update after deploy
+  url: "https://portfolio-three-eosin-86.vercel.app",
 };
