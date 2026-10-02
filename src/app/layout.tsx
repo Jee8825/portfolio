@@ -1,8 +1,12 @@
-import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+import type { Metadata, Viewport } from "next";
+import "@fontsource-variable/fraunces/full.css";
+import "@fontsource-variable/space-grotesk/index.css";
+import "@fontsource-variable/recursive/full.css";
 import "./globals.css";
 import { seo, profile } from "@/data/portfolio";
+import { Engine } from "@/components/engine/Engine";
+import Stage from "@/components/gl/Stage";
+import { Hud } from "@/components/chrome/Hud";
 
 export const metadata: Metadata = {
   metadataBase: new URL(seo.url),
@@ -24,17 +28,29 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#07080a" },
+    { media: "(prefers-color-scheme: light)", color: "#f2ede4" },
+  ],
+};
+
+/* Runs before paint: pick the world (saved choice → OS preference) so there is no flash. */
+const boot = `(function(){try{var d=document.documentElement;var w=localStorage.getItem('jee:world');if(w!=='digital'&&w!=='analog'){w=matchMedia('(prefers-color-scheme: light)').matches?'analog':'digital'}d.dataset.world=w;d.dataset.quick=localStorage.getItem('jee:quick')==='1'?'1':'0'}catch(e){document.documentElement.dataset.world='digital'}})()`;
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full">{children}</body>
+    <html lang="en" data-world="digital" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: boot }} />
+      </head>
+      <body>
+        <Engine />
+        <Stage />
+        <Hud />
+        {children}
+        <div className="atmos" aria-hidden />
+      </body>
     </html>
   );
 }

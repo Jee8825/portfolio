@@ -1,25 +1,24 @@
-import { Navbar } from "@/components/Navbar";
-import { Hero } from "@/components/sections/Hero";
-import { About } from "@/components/sections/About";
-import { Skills } from "@/components/sections/Skills";
-import { Projects } from "@/components/sections/Projects";
-import { Experience } from "@/components/sections/Experience";
-import { Contact } from "@/components/sections/Contact";
-import { Footer } from "@/components/Footer";
+import { Director } from "@/components/engine/Engine";
+import { Boot } from "@/components/scenes/Boot";
+import { Signal } from "@/components/scenes/Signal";
+
+const STUBS = [
+  ["memory", 2], ["cortex", 3], ["works", 4], ["findesk", 5], ["synapse", 6], ["cognitia", 7], ["log", 8], ["transmit", 9],
+] as const;
 
 export default function Home() {
   return (
     <>
-      <Navbar />
-      <main>
-        <Hero />
-        <About />
-        <Skills />
-        <Projects />
-        <Experience />
-        <Contact />
+      <Boot />
+      <main id="main" className="relative z-10">
+        <Signal />
+        {STUBS.map(([id, f]) => (
+          <section key={id} id={id} data-scene={id} data-formation={f} className="flex min-h-[180vh] items-center px-6">
+            <h2 className="display text-6xl">{id}</h2>
+          </section>
+        ))}
       </main>
-      <Footer />
+      <Director />
     </>
   );
 }
