@@ -89,3 +89,23 @@ frame sequences for scroll-scrub. Compositions reuse the site's tokens so films 
 4. WORKS — 4 chapters + /work/[slug] pages (3D object, architecture, mini-demo) + morph transitions.
 5. HyperFrames — intro sting, 4 trailers, scroll-scrub sequences, LinkedIn promo.
 6. Audio, QUICK READ, a11y/perf pass, SEO, preview deploy.
+
+## Direction 2 — "Data City" (chosen 2026-10-02, supersedes Direction 1 on `revamp`)
+Direction 1 (Neural film, Digital/Analog) is parked intact on branch `revamp-neural`.
+- **Concept:** isometric 3D data city; camera flies district → district. Each featured project is a
+  building you scroll *inside* (elevator): lobby = name + thesis, floor 1 = problem/move,
+  floor 2 = architecture as live pipes, floor 3 = demo, roof = metrics + links.
+- **Worlds:** NEON night (#0A0614, neon tubes, rain reflections, fog) / BLUEPRINT day (cyanotype
+  #1F4E8C, white CAD linework, dimension arrows, stamped title blocks).
+- **Switch:** liquid melt — fluid-sim shader floods the new world in from the cursor.
+- **3D style:** sculpted glass & chrome (refraction, reflections, HDR studio light, caustics).
+- **Project viz:** architecture as city infra (roads/pipes, packets as traffic), exploded 3D view,
+  interactive demos (keep), HyperFrames films (re-cut).
+- **Video:** intro night flythrough, per-project trailers, 16:9 LinkedIn city tour with the melt,
+  scroll-scrubbed pre-rendered camera flights.
+- **Sound:** opt-in city ambience (neon hum, rain, synth swells / drafting-room paper by day).
+- **Palette:** night t1 #FF2E88 magenta · t2 #22E1FF cyan · t3 #FFB020 amber; day ink #F4F8FF on
+  #1F4E8C, t1 #FF5C8A redline, t3 #FFC94A markup.
+- **Fonts:** Unbounded (display) · Space Grotesk (text) · JetBrains Mono (mono).
+- Reusable from Direction 1: content model, Lenis/GSAP/R3F engine + GPU tiering, quick read,
+  demos, /work routes, films pipeline (build.mjs, deterministic engine pattern).
