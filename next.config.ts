@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
     root: path.resolve(__dirname),
   },
   outputFileTracingRoot: path.resolve(__dirname),
+  // React <ViewTransition> morphs a project's title from its chapter into /work/[slug]
+  experimental: {
+    viewTransition: true,
+  },
 };
 
 export default nextConfig;

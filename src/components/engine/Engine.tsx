@@ -46,7 +46,7 @@ export function Engine() {
     }
 
     /* smooth scroll */
-    lenis = new Lenis({ autoRaf: false, lerp: reduced ? 1 : 0.09, wheelMultiplier: 0.9 });
+    lenis = new Lenis({ autoRaf: false, lerp: reduced ? 1 : 0.09, wheelMultiplier: 0.9, anchors: { duration: 1.6 } });
     lenis.on("scroll", (l: Lenis) => {
       stage.velocity = l.velocity;
       stage.progress = l.progress;
@@ -119,7 +119,7 @@ export function Director() {
         );
       }
     });
-    stage.scene = 1;
+    if (els[0]) stage.scene = Number(els[0].dataset.formation);
     const id = requestAnimationFrame(() => {
       ScrollTrigger.sort();
       ScrollTrigger.refresh();

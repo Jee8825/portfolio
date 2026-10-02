@@ -1,9 +1,10 @@
 "use client";
+/* eslint-disable react-hooks/immutability -- three.js uniforms, materials and the camera are mutated per frame inside useFrame by design */
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { buildField, FORMATIONS, STAGING, TEX_W } from "@/lib/formations";
+import { buildField, CORTEX_CENTERS, FORMATIONS, mulberry32, STAGING, TEX_W } from "@/lib/formations";
 import { PALETTE, hexToRgb } from "@/lib/palette";
 import { stage } from "@/lib/store";
 import { profile } from "@/data/portfolio";
@@ -78,6 +79,9 @@ export function NeuralField({ count }: { count: number }) {
       uInk1: { value: new THREE.Vector3() },
       uInk2: { value: new THREE.Vector3() },
       uInk3: { value: new THREE.Vector3() },
+      uFocus: { value: 0 },
+      uFocusAmt: { value: 0 },
+      uDim: { value: 1 },
     }),
     [texture, data.rows, gl],
   );
@@ -86,9 +90,10 @@ export function NeuralField({ count }: { count: number }) {
     const g = new THREE.BufferGeometry();
     const idx = new Float32Array(count);
     const seed = new Float32Array(count);
+    const rnd = mulberry32(7);
     for (let i = 0; i < count; i++) {
       idx[i] = i;
-      seed[i] = Math.random();
+      seed[i] = rnd();
     }
     g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(count * 3), 3));
     g.setAttribute("aIdx", new THREE.BufferAttribute(idx, 1));
@@ -101,12 +106,13 @@ export function NeuralField({ count }: { count: number }) {
     const seeds = pointsGeo.getAttribute("aSeed").array as Float32Array;
     const e = data.edges;
     const m = e.length / 2;
+    const rnd = mulberry32(11);
     const g = new THREE.BufferGeometry();
     const A = new Float32Array(m * 2), B = new Float32Array(m * 2);
     const SA = new Float32Array(m * 2), SB = new Float32Array(m * 2);
     const side = new Float32Array(m * 2), s = new Float32Array(m * 2);
     for (let k = 0; k < m; k++) {
-      const a = e[k * 2], b = e[k * 2 + 1], r = Math.random();
+      const a = e[k * 2], b = e[k * 2 + 1], r = rnd();
       for (let v = 0; v < 2; v++) {
         const o = k * 2 + v;
         A[o] = a; B[o] = b; SA[o] = seeds[a]; SB[o] = seeds[b]; side[o] = v; s[o] = r;
@@ -161,6 +167,7 @@ export function NeuralField({ count }: { count: number }) {
   const worldRef = useRef(-1);
   const smooth = useRef({ scene: 0, vel: 0, px: 0, py: 0 });
   const tmp = useMemo(() => new THREE.Vector3(), []);
+  const tmp2 = useMemo(() => new THREE.Vector3(), []);
 
   useFrame((state, delta) => {
     const u = uniforms;
@@ -208,8 +215,8 @@ export function NeuralField({ count }: { count: number }) {
       const o = STAGING[f as keyof typeof STAGING].offset;
       if (wide) return out.set(o[0], o[1], o[2]);
       // narrow screens: centred, everything lifted above the copy
-      if (f === "signal") return out.set(0, 2.1, 0);
-      return out.set(0, o[0] !== 0 ? 1.6 : o[1], 0);
+      if (f === "signal") return out.set(0, 2.2, 0);
+      return out.set(0, o[0] !== 0 ? -2.0 : o[1], 0);
     };
     off(fa, u.uOffFrom.value);
     off(fb, u.uOffTo.value);
@@ -219,6 +226,36 @@ export function NeuralField({ count }: { count: number }) {
     u.uVel.value = s.vel;
     u.uScatter.value = stage.scatter;
     u.uPulse.value = stage.pulse;
+
+    /* narrow screens: the field sits behind the copy, so it steps back */
+    const loud = (f: string) => f === "signal" || f === "transmit" || f === "boot";
+    const dimTarget = wide ? 1 : THREE.MathUtils.lerp(loud(fa) ? 1 : 0.4, loud(fb) ? 1 : 0.4, em);
+    u.uDim.value += (dimTarget - u.uDim.value) * (1 - Math.exp(-dt * 4));
+
+    /* tier spotlight */
+    stage.focusAmt += ((stage.focus > 0 ? 1 : 0) - stage.focusAmt) * (1 - Math.exp(-dt * 5));
+    if (stage.focus > 0) u.uFocus.value = stage.focus;
+    u.uFocusAmt.value = stage.focusAmt;
+
+    /* project the cortex cluster centres so DOM labels can ride on them */
+    const ci = FORMATIONS.indexOf("cortex");
+    if (Math.abs(sc - ci) < 1) {
+      const st = STAGING.cortex;
+      const fitC = fit("cortex");
+      const offC = off("cortex", tmp2);
+      const a = u.uTime.value * 0.12 * st.spin;
+      const c = Math.cos(a), sn = Math.sin(a);
+      CORTEX_CENTERS.forEach(([x, y, z], i) => {
+        tmp.set((x * c + z * sn) * fitC + offC.x, y * fitC + offC.y, (-x * sn + z * c) * fitC + offC.z);
+        const depth = tmp.z;
+        tmp.project(camera);
+        stage.anchors[i] = {
+          x: (tmp.x * 0.5 + 0.5) * size.width,
+          y: (-tmp.y * 0.5 + 0.5) * size.height,
+          z: depth,
+        };
+      });
+    }
 
     /* pointer → world plane at z = 0, eased */
     s.px += (stage.pointer.x - s.px) * (1 - Math.exp(-dt * 8));

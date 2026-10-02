@@ -25,6 +25,11 @@ export const stage = {
   glitch: 0,
   /** 0..1 "signal fired" pulse used by TRANSMIT and clicks */
   pulse: 0,
+  /** ink tier to spotlight (1..3), 0 = none; `focusAmt` eases it in/out */
+  focus: 0,
+  focusAmt: 0,
+  /** projected screen positions (px) of the cortex clusters, updated every frame */
+  anchors: [] as { x: number; y: number; z: number }[],
 };
 
 /* ------------------------------------------------------------------ */

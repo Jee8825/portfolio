@@ -41,12 +41,12 @@ const common = /* glsl */ `
     // staggered per particle so the morph flows instead of snapping
     float m = clamp(uMix * 1.7 - seed * 0.7, 0.0, 1.0);
     m = m * m * (3.0 - 2.0 * m);
-    vec3 pa = rotY(a.xyz, uTime * 0.12 * uSpinFrom) + uOffFrom * uSide;
-    vec3 pb = rotY(b.xyz, uTime * 0.12 * uSpinTo) + uOffTo * uSide;
+    // shapes are fitted to the screen; their placement (offset) is not scaled
+    vec3 pa = rotY(a.xyz, uTime * 0.12 * uSpinFrom) * uFit + uOffFrom * uSide;
+    vec3 pb = rotY(b.xyz, uTime * 0.12 * uSpinTo) * uFit + uOffTo * uSide;
     vec3 p = mix(pa, pb, m);
     // particles arc through depth while travelling
-    p.z += sin(m * 3.14159) * (seed - 0.5) * 3.5;
-    p *= uFit;
+    p.z += sin(m * 3.14159) * (seed - 0.5) * 3.5 * uFit;
 
     // breathing drift; scroll velocity stirs the field
     float amp = 0.035 + min(abs(uVel), 4.0) * 0.03;
@@ -84,6 +84,9 @@ export const pointsVert = /* glsl */ `
   uniform vec3 uInk1;
   uniform vec3 uInk2;
   uniform vec3 uInk3;
+  uniform float uFocus;
+  uniform float uFocusAmt;
+  uniform float uDim;
   varying vec3 vColor;
   varying float vAlpha;
   varying float vSeed;
@@ -102,7 +105,14 @@ export const pointsVert = /* glsl */ `
       // episodic memories flicker; key points are dimmer phosphor
       if (ink > 0.5 && ink < 1.5) vAlpha = 0.55 + 0.45 * sin(uTime * 5.0 + aSeed * 120.0);
       if (ink < 0.5) vAlpha = 0.85;
-    } else {
+    }
+    // spotlight one memory tier: the others recede
+    if (uFocus > 0.5 && abs(ink - uFocus) > 0.5) {
+      vAlpha *= mix(1.0, 0.14, uFocusAmt);
+      size *= mix(1.0, 0.7, uFocusAmt);
+    }
+    vAlpha *= uDim;
+    if (uWorld > 0.5) {
       // print: plates are slightly mis-registered, dots a bit chunkier
       vec2 reg = ink < 0.5 ? vec2(0.0) : ink < 1.5 ? vec2(0.0035, -0.002) : ink < 2.5 ? vec2(-0.003, 0.0025) : vec2(0.0015, 0.0035);
       gl_Position.xy += reg * gl_Position.w;
@@ -136,7 +146,7 @@ export const pointsFrag = /* glsl */ `
       float n = (hash(floor(gl_PointCoord * 9.0) + vSeed) - 0.5) * 0.12;
       float a = 1.0 - smoothstep(0.36 + n, 0.44 + n, d);
       if (a < 0.02) discard;
-      gl_FragColor = vec4(mix(vec3(1.0), vColor, a * 0.9), 1.0);
+      gl_FragColor = vec4(mix(vec3(1.0), vColor, a * 0.9 * vAlpha), 1.0);
     }
   }
 `;

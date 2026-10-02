@@ -10,7 +10,10 @@ import { getLenis } from "@/components/engine/Engine";
 
 function go(id: string) {
   const el = document.getElementById(id);
-  if (!el) return;
+  if (!el) {
+    location.href = `/#${id}`;
+    return;
+  }
   sound.play("tick");
   const lenis = getLenis();
   if (lenis) lenis.scrollTo(el, { duration: 1.6, easing: (t) => 1 - Math.pow(1 - t, 4) });
@@ -69,7 +72,7 @@ export function Hud() {
       </a>
 
       {/* ---------------- top bar ---------------- */}
-      <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6">
+      <header className="fixed inset-x-0 top-0 z-50 bg-gradient-to-b from-paper via-paper/85 to-transparent px-4 pb-8 pt-4 sm:px-6 lg:bg-none lg:pb-0">
         <div className="flex items-start justify-between gap-4">
           <button
             onClick={() => go("signal")}
@@ -77,7 +80,7 @@ export function Hud() {
             aria-label="Back to top"
           >
             <span className="text-[0.8rem] tracking-[0.2em] text-ink">{profile.name.toUpperCase()}</span>
-            <span className="text-ink-3">{digital ? "SYS://AI-DS-ENGINEER" : "AI & DATA SCIENCE — PRINT ED."}</span>
+            <span className="hidden text-ink-3 sm:inline">{digital ? "SYS://AI-DS-ENGINEER" : "AI & DATA SCIENCE — PRINT ED."}</span>
           </button>
 
           <nav aria-label="Scenes" className="hidden lg:block">
@@ -110,7 +113,7 @@ export function Hud() {
               className={`label px-2.5 py-1.5 border ${quick ? "border-ink bg-ink text-paper" : "border-rule text-ink-2 hover:text-ink"}`}
               title="A fast, plain one-page read — no animation"
             >
-              Quick read
+              Quick<span className="hidden sm:inline"> read</span>
             </button>
             <button
               onClick={toggleSound}

@@ -33,7 +33,7 @@ export function Boot() {
     run();
     function run() {
       started.current = true;
-      const quiet = s.reducedMotion || s.quick || ui.get().tier === 0;
+      const quiet = s.reducedMotion || s.quick || s.booted || ui.get().tier === 0;
       let seen = false;
       try {
         seen = sessionStorage.getItem("jee:booted") === "1";

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { seo } from "@/data/portfolio";
+import { projects, seo } from "@/data/portfolio";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -9,5 +9,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 1,
     },
+    ...projects
+      .filter((p) => p.featured && p.chapter)
+      .map((p) => ({
+        url: `${seo.url}/work/${p.slug}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly" as const,
+        priority: 0.8,
+      })),
   ];
 }

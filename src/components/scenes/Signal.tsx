@@ -70,7 +70,7 @@ export function Signal() {
           </div>
           <div className={`js-fade flex items-center gap-4 ${invisibleUntil(booted)}`}>
             {profile.available && (
-              <span className="chip">
+              <span className="chip whitespace-normal">
                 <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-t3" />
                 {profile.availabilityText}
               </span>

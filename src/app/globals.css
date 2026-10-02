@@ -123,6 +123,7 @@ body {
   background: var(--paper);
 }
 
+@layer components {
 /* ------------------------------------------------------------------ */
 /*  Type: the morph trio                                               */
 /* ------------------------------------------------------------------ */
@@ -297,13 +298,39 @@ body {
   box-shadow: 5px 5px 0 var(--t1);
 }
 
+}
+
 /* ------------------------------------------------------------------ */
 /*  Theme switch — the portal                                          */
 /* ------------------------------------------------------------------ */
-::view-transition-old(root),
-::view-transition-new(root) {
+/* world switch: the portal is driven from JS (lib/world.ts) */
+:root.vt-run::view-transition-old(root),
+:root.vt-run::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+}
+/* route change: a quick dissolve through a blur, titles morph on top */
+::view-transition-old(root) {
+  animation: 260ms cubic-bezier(0.4, 0, 1, 1) both vt-out;
+}
+::view-transition-new(root) {
+  animation: 420ms cubic-bezier(0, 0, 0.2, 1) 120ms both vt-in;
+}
+::view-transition-group(.title-morph) {
+  animation-duration: 700ms;
+  animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+}
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    filter: blur(8px);
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+  }
 }
 /* ------------------------------------------------------------------ */
 /*  Quick read: no theatre, just the facts                             */

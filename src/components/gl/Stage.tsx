@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-hooks/immutability -- the post chain is mutated per frame inside useFrame by design */
 
 import { useEffect, useMemo, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
