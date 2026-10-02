@@ -15,6 +15,20 @@ export function Signal() {
     () => {
       if (!booted) return;
       const split = SplitText.create(".js-headline", { type: "lines,words", mask: "lines" });
+      // the sign ignites tube by tube, with a couple of stutters
+      const sign = SplitText.create(".js-sign", { type: "chars" });
+      sign.chars.forEach((c, i) => {
+        gsap.fromTo(
+          c,
+          { opacity: 0.08 },
+          {
+            keyframes: { opacity: [0.08, 1, 0.2, 1, 0.5, 1] },
+            duration: 0.9,
+            delay: 0.05 + ((i * 7) % 10) * 0.07,
+            ease: "steps(6)",
+          },
+        );
+      });
       gsap
         .timeline({ delay: 0.15 })
         .from(split.words, { yPercent: 110, duration: 1.1, stagger: 0.035, ease: "expo.out" })
@@ -27,7 +41,10 @@ export function Signal() {
         ease: "none",
         scrollTrigger: { trigger: root.current, start: "top top", end: "bottom 30%", scrub: true },
       });
-      return () => split.revert();
+      return () => {
+        split.revert();
+        sign.revert();
+      };
     },
     { scope: root, dependencies: [booted] },
   );
@@ -40,25 +57,25 @@ export function Signal() {
       data-formation="1"
       className="relative flex min-h-[100svh] flex-col justify-end px-4 pb-20 pt-28 sm:px-6 sm:pb-24"
     >
-      {/* The field draws the name; this is the real heading (visible when there is no WebGL). */}
-      <h1 className="display signal pointer-events-none absolute inset-x-4 top-[30%] text-center text-[clamp(3.2rem,13vw,12rem)] [:root[data-gl='on']_&]:opacity-0 [:root[data-quick='1']_&]:opacity-100">
+      {/* the name, as a sign over the skyline */}
+      <h1 className="js-sign display signal sign pointer-events-none absolute inset-x-4 top-[22%] text-center text-[clamp(2.6rem,10.5vw,10.5rem)] uppercase sm:top-[24%]">
         {profile.name}
         <span className="sr-only"> — {profile.role}</span>
       </h1>
 
       <div className="js-hero-copy grid gap-8 lg:grid-cols-12 lg:items-end">
-        <div className="lg:col-span-7">
+        <div className="scrim lg:col-span-7">
           <p className="js-fade label mb-5 flex items-center gap-2 text-ink-2">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-t1" />
             <span data-scramble={profile.role.toUpperCase()}>{profile.role.toUpperCase()}</span>
           </p>
           <p
-            className={`js-headline display signal max-w-[19ch] text-balance text-[clamp(2.2rem,5.2vw,4.6rem)] ${invisibleUntil(booted)}`}
+            className={`js-headline display max-w-[19ch] text-balance text-[clamp(2.2rem,5.2vw,4.6rem)] ${invisibleUntil(booted)}`}
           >
             {profile.headline}
           </p>
         </div>
-        <div className="space-y-6 lg:col-span-4 lg:col-start-9">
+        <div className="scrim space-y-6 lg:col-span-4 lg:col-start-9">
           <p className={`js-fade max-w-md text-ink-2 ${invisibleUntil(booted)}`}>{profile.subheadline}</p>
           <div className={`js-fade flex flex-wrap items-center gap-3 ${invisibleUntil(booted)}`}>
             <a href="#works" className="btn primary">

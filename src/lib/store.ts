@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
-export type World = "digital" | "analog";
+export type World = "neon" | "blueprint";
 /** 0 = no WebGL (static art), 1 = light, 2 = medium, 3 = full */
 export type GpuTier = 0 | 1 | 2 | 3;
 
@@ -17,7 +17,12 @@ export const stage = {
   velocity: 0,
   progress: 0,
   pointer: { x: 0, y: 0 },
-  /** 0 = digital, 1 = analog. Flips at the peak of the switch sequence. */
+  /** 0..1 progress through the section currently on screen (elevator rides, exploded views) */
+  sub: 0,
+  /** 0..1 liquid-melt ripple progress and its origin in uv space */
+  melt: 0,
+  meltAt: { x: 0.9, y: 0.95 },
+  /** 0 = neon (night), 1 = blueprint (day). Flips at the peak of the melt. */
   world: 0,
   /** 0..1 particle explosion used by transitions */
   scatter: 0,
@@ -47,7 +52,7 @@ type UIState = {
 };
 
 let state: UIState = {
-  world: "digital",
+  world: "neon",
   tier: 0,
   quick: false,
   sound: false,

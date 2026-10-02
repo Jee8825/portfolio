@@ -18,7 +18,7 @@ import { Film } from "./Film";
  */
 export function Chapter({ project, index, deep = false }: { project: Project; index: number; deep?: boolean }) {
   const root = useRef<HTMLElement>(null);
-  const digital = useUI((s) => s.world) === "digital";
+  const night = useUI((s) => s.world) === "neon";
   const ch = project.chapter!;
   const code = String(index + 1).padStart(2, "0");
 
@@ -48,7 +48,7 @@ export function Chapter({ project, index, deep = false }: { project: Project; in
         gsap.from(el, {
           duration: 1.1,
           delay: i * 0.12,
-          scrambleText: { text: el.textContent || "", chars: digital ? "0123456789.×→" : "0123456789", speed: 0.5 },
+          scrambleText: { text: el.textContent || "", chars: night ? "0123456789.×→" : "0123456789", speed: 0.5 },
           scrollTrigger: { trigger: el, start: "top 88%" },
         }),
       );
@@ -72,13 +72,13 @@ export function Chapter({ project, index, deep = false }: { project: Project; in
         >
           <div className="label mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-ink-2">
             <span className={`t${project.tier}`}>
-              {digital ? `W/${code}` : `Chapter ${code}`}
+              {night ? `W/${code}` : `Chapter ${code}`}
             </span>
             <span>{project.status}</span>
             <span className="text-ink-3">{tiers[project.tier].name} tier</span>
           </div>
           <ViewTransition name={`title-${project.slug}`} share="title-morph">
-            <h2 className="js-name display signal text-[clamp(3.6rem,10vw,9rem)]">{project.name}</h2>
+            <h2 className="js-name display signal sign whitespace-nowrap text-[clamp(2.4rem,6.4vw,6.4rem)]">{project.name}</h2>
           </ViewTransition>
           <p className="label mt-5 text-ink-2">{project.tagline}</p>
           <p className="display mt-10 max-w-[18ch] text-[clamp(1.7rem,3vw,2.7rem)] text-balance">{ch.thesis}</p>

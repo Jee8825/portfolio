@@ -9,7 +9,7 @@ import { useUI } from "@/lib/store";
  * `profile.portrait` and it gets the same screen treatment per world.
  */
 export function Portrait({ src, name }: { src?: string; name: string }) {
-  const digital = useUI((s) => s.world) === "digital";
+  const night = useUI((s) => s.world) === "neon";
   const dots = useMemo(() => silhouette(), []);
   const W = 132,
     H = 168;
@@ -27,7 +27,7 @@ export function Portrait({ src, name }: { src?: string; name: string }) {
               className="absolute inset-0 h-full w-full object-cover"
               style={{
                 filter: "grayscale(1) contrast(1.5)",
-                mixBlendMode: digital ? "screen" : "multiply",
+                mixBlendMode: night ? "screen" : "multiply",
                 transform: "translate(3px, 2px)",
                 opacity: 0.55,
                 background: "var(--t1)",
@@ -38,8 +38,8 @@ export function Portrait({ src, name }: { src?: string; name: string }) {
               alt={`Portrait of ${name}`}
               className="absolute inset-0 h-full w-full object-cover"
               style={{
-                filter: digital ? "grayscale(1) contrast(1.35) brightness(1.1)" : "grayscale(1) contrast(1.6)",
-                mixBlendMode: digital ? "screen" : "multiply",
+                filter: night ? "grayscale(1) contrast(1.35) brightness(1.1)" : "grayscale(1) contrast(1.6)",
+                mixBlendMode: night ? "screen" : "multiply",
                 WebkitMaskImage: "radial-gradient(circle, #000 52%, transparent 58%)",
                 maskImage: "radial-gradient(circle, #000 52%, transparent 58%)",
                 WebkitMaskSize: "4px 4px",
@@ -49,7 +49,7 @@ export function Portrait({ src, name }: { src?: string; name: string }) {
           </div>
         ) : (
           <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 h-full w-full" role="img" aria-label="Portrait placeholder">
-            <g fill="var(--t1)" transform="translate(2.5 1.5)" opacity={digital ? 0.5 : 0.85}>
+            <g fill="var(--t1)" transform="translate(2.5 1.5)" opacity={night ? 0.5 : 0.85}>
               {dots.map((d, i) => (
                 <circle key={`p${i}`} cx={d.x} cy={d.y} r={d.r * 0.85} />
               ))}
@@ -61,7 +61,7 @@ export function Portrait({ src, name }: { src?: string; name: string }) {
             </g>
           </svg>
         )}
-        {digital && (
+        {night && (
           <span
             aria-hidden
             className="absolute inset-x-0 h-8 animate-[scan_3.2s_linear_infinite]"
@@ -71,7 +71,7 @@ export function Portrait({ src, name }: { src?: string; name: string }) {
       </div>
       {!src && (
         <figcaption className="label absolute -bottom-6 left-0 text-ink-3">
-          {digital ? "IMG // PENDING" : "photo to come"}
+          {night ? "IMG // PENDING" : "photo to come"}
         </figcaption>
       )}
       <style>{`@keyframes scan{from{transform:translateY(-2rem)}to{transform:translateY(${H}px)}}`}</style>

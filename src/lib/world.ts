@@ -7,7 +7,7 @@ import { stage, ui, writePref, type World } from "@/lib/store";
 function apply(next: World) {
   const root = document.documentElement;
   root.dataset.world = next;
-  stage.world = next === "analog" ? 1 : 0;
+  stage.world = next === "blueprint" ? 1 : 0;
   ui.set({ world: next });
   writePref("world", next);
   sound.setWorld(next);
@@ -16,60 +16,73 @@ function apply(next: World) {
 let busy = false;
 
 /**
- * The signature cut between worlds:
- *  1. the field explodes, the screen tears           (0.0 – 0.35s)
- *  2. a portal opens from the switch, new world live (0.35 – 1.4s)
- *  3. the field re-assembles, type re-sets its axes   (0.4 – 1.6s)
- *  4. visible labels re-scramble                      (≈1.0s)
+ * The liquid melt between NEON and BLUEPRINT:
+ *  • the new world floods in from the switch, its edge warped like liquid
+ *    (view-transition clip + SVG turbulence displacement)
+ *  • the old world drips and slides away underneath
+ *  • the WebGL city rolls a refractive ripple out from the same point
+ *  • type re-sets (Unbounded weight 760 ⇄ 260)
  */
 export async function switchWorld(origin?: { x: number; y: number }) {
   if (busy) return;
-  const current = ui.get().world;
-  const next: World = current === "digital" ? "analog" : "digital";
+  const next: World = ui.get().world === "neon" ? "blueprint" : "neon";
   const root = document.documentElement;
-  const reduced = ui.get().reducedMotion;
+  const x = origin?.x ?? innerWidth / 2;
+  const y = origin?.y ?? innerHeight / 2;
+  stage.meltAt = { x: x / innerWidth, y: 1 - y / innerHeight };
 
-  if (reduced || typeof document.startViewTransition !== "function") {
+  if (ui.get().reducedMotion || typeof document.startViewTransition !== "function") {
     apply(next);
     return;
   }
   busy = true;
-  const x = origin?.x ?? innerWidth / 2;
-  const y = origin?.y ?? innerHeight / 2;
-  const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-
   sound.play("switch");
-  await new Promise<void>((done) =>
-    gsap
-      .timeline({ onComplete: done })
-      .to(stage, { scatter: 0.6, duration: 0.34, ease: "power3.in" }, 0)
-      .to(stage, { glitch: 1, duration: 0.3, ease: "power2.in" }, 0),
-  );
+  const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) * 1.15;
+  const px = (x / innerWidth) * 100;
+  const py = (y / innerHeight) * 100;
+  // circle() % radius is relative to sqrt(w² + h²) / √2
+  const pr = (r / (Math.hypot(innerWidth, innerHeight) / Math.SQRT2)) * 100;
+  const edge = document.getElementById("melt-edge-map");
+  const drip = document.getElementById("melt-drip-map");
 
   root.classList.add("vt-run");
   const vt = document.startViewTransition(() => apply(next));
-  gsap.to(stage, { scatter: 0, duration: 1.5, ease: "expo.out", delay: 0.05 });
-  gsap.to(stage, { glitch: 0, duration: 0.9, ease: "power2.out", delay: 0.1 });
+  gsap.fromTo(stage, { melt: 0 }, { melt: 1, duration: 1.5, ease: "power2.out", onComplete: () => void (stage.melt = 0) });
 
+  const anims: Animation[] = [];
   try {
     await vt.ready;
-    // the portal: the new world irises open from the switch itself
-    root.animate(
-      {
-        clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`],
-        filter: ["contrast(1.6) saturate(1.6)", "contrast(1.1)", "none"],
-      },
-      { duration: 1050, easing: "cubic-bezier(0.76, 0, 0.24, 1)", pseudoElement: "::view-transition-new(root)" },
+    const opts = { duration: 1250, easing: "cubic-bezier(0.7, 0, 0.2, 1)", fill: "both" as FillMode };
+    anims.push(
+      root.animate(
+        {
+          // percentages are relative to the snapshot itself, so zoom/scaling can't skew the origin
+          clipPath: [`circle(0% at ${px}% ${py}%)`, `circle(${pr}% at ${px}% ${py}%)`],
+          filter: ["url(#melt-edge)", "url(#melt-edge)"],
+        },
+        { ...opts, pseudoElement: "::view-transition-new(root)" },
+      ),
     );
+    anims.push(root.animate(
+      [
+        { transform: "translateY(0)", filter: "url(#melt-drip)" },
+        { transform: "translateY(6vh) scaleY(1.06)", filter: "url(#melt-drip)" },
+      ],
+      { ...opts, pseudoElement: "::view-transition-old(root)" },
+    ));
+    if (edge) gsap.fromTo(edge, { attr: { scale: 90 } }, { attr: { scale: 0 }, duration: 1.25, ease: "power2.out" });
+    if (drip) gsap.fromTo(drip, { attr: { scale: 0 } }, { attr: { scale: 160 }, duration: 1.25, ease: "power2.in" });
     await vt.finished;
   } finally {
+    // filled animations would otherwise linger on :root and hijack the next switch
+    anims.forEach((a) => a.cancel());
     root.classList.remove("vt-run");
     busy = false;
   }
   rescramble();
 }
 
-/** Re-type the labels currently on screen, like a terminal re-drawing / a press re-printing. */
+/** Re-type the labels on screen, like a sign re-lighting / a drafter re-lettering. */
 function rescramble() {
   const els = Array.from(document.querySelectorAll<HTMLElement>("[data-scramble]")).filter((el) => {
     const b = el.getBoundingClientRect();
@@ -82,7 +95,7 @@ function rescramble() {
       delay: i * 0.025,
       scrambleText: {
         text,
-        chars: ui.get().world === "digital" ? "01<>/\\|#_" : "abcdefghijklmnopqrstuvwxyz",
+        chars: ui.get().world === "neon" ? "▮▯/\\|#_" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         speed: 0.6,
       },
       ease: "none",

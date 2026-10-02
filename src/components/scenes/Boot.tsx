@@ -6,20 +6,20 @@ import { sound } from "@/lib/sound";
 import { stage, ui, useUI } from "@/lib/store";
 import { getLenis } from "@/components/engine/Engine";
 
-const DIGITAL = [
-  "init neural_field",
-  "mount memory tiers  [EPI] [SEM] [PRO]",
-  "calibrate confidence",
-  "signal acquired",
+const NIGHT = [
+  "grid power — online",
+  "districts lit  [RECALL] [FINDESK] [SYNAPSE] [COGNITIA]",
+  "highways — traffic flowing",
+  "skyline ready",
 ];
-const ANALOG = [
-  "plate K — key black",
-  "plate P — fluoro pink",
-  "plate B — riso blue",
-  "plate Y — yellow",
+const DAY = [
+  "sheet 01 — site plan",
+  "districts surveyed",
+  "highways dimensioned",
+  "drawing issued",
 ];
 
-/** 00 BOOT — the field powers on: a single scanline, then the name. Any input skips. */
+/** 00 BOOT — the city powers on block by block while the camera descends. Any input skips. */
 export function Boot() {
   const world = useUI((s) => s.world);
   const gpuReady = useUI((s) => s.gpuReady);
@@ -60,7 +60,7 @@ export function Boot() {
       });
       tl.to(stage, { glitch: 0.35, duration: 0.12, yoyo: true, repeat: 1 }, 1.25)
         .to(root.current, { autoAlpha: 0, duration: 0.45, ease: "power2.out" }, 1.45)
-        .to(stage, { boot: 1, duration: 2.1, ease: "expo.inOut" }, 1.3)
+        .to(stage, { boot: 1, duration: 2.6, ease: "power2.inOut" }, 0.2)
         .call(() => {
           sound.play("boot");
           ui.set({ booted: true });
@@ -81,7 +81,7 @@ export function Boot() {
   }, [gpuReady]);
 
   if (gone) return null;
-  const lines = world === "digital" ? DIGITAL : ANALOG;
+  const lines = world === "neon" ? NIGHT : DAY;
   return (
     <div
       ref={root}
@@ -91,10 +91,10 @@ export function Boot() {
       <ul className="label space-y-1.5 text-ink-2">
         {lines.map((l, i) => (
           <li key={l} data-line className="invisible flex gap-3">
-            <span className="text-ink-3">{world === "digital" ? `[${String(i).padStart(2, "0")}]` : `${i + 1}.`}</span>
+            <span className="text-ink-3">{world === "neon" ? `[${String(i).padStart(2, "0")}]` : `${i + 1}.`}</span>
             <span>{l}</span>
             <span data-ok className={`invisible ${i % 3 === 0 ? "t1" : i % 3 === 1 ? "t2" : "t3"}`}>
-              {world === "digital" ? "ok" : "✓ registered"}
+              {world === "neon" ? "ok" : "✓ checked"}
             </span>
           </li>
         ))}

@@ -17,7 +17,7 @@ function fire() {
 export function Transmit() {
   const root = useRef<HTMLElement>(null);
   const [copied, setCopied] = useState(false);
-  const digital = useUI((s) => s.world) === "digital";
+  const night = useUI((s) => s.world) === "neon";
 
   useGSAP(
     () => {
@@ -63,7 +63,7 @@ export function Transmit() {
           <a
             href={`mailto:${profile.email}`}
             onClick={fire}
-            className="display signal break-all text-[clamp(1.6rem,4.6vw,3.6rem)] underline decoration-rule decoration-1 underline-offset-[0.2em] transition-colors hover:decoration-[var(--t1)]"
+            className="display break-all text-[clamp(1.1rem,3vw,2.4rem)] underline decoration-rule decoration-1 underline-offset-[0.3em] transition-colors hover:decoration-[var(--t1)]"
           >
             {profile.email}
           </a>
@@ -102,7 +102,7 @@ export function Transmit() {
         <span>
           © {new Date().getFullYear()} {profile.name}
         </span>
-        <span>{digital ? "Rendered live — Next.js · Three.js · GSAP" : "Printed live — Next.js · Three.js · GSAP"}</span>
+        <span>{night ? "Rendered live — Next.js · Three.js · GSAP" : "Printed live — Next.js · Three.js · GSAP"}</span>
       </footer>
     </section>
   );

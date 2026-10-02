@@ -8,7 +8,7 @@ let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
 let drone: { stop: () => void } | null = null;
 let enabled = false;
-let world: "digital" | "analog" = "digital";
+let world: "neon" | "blueprint" = "neon";
 
 function ac() {
   if (!ctx) {
@@ -31,16 +31,16 @@ function startDrone() {
   const c = ac();
   const out = c.createGain();
   out.gain.value = 0;
-  out.gain.linearRampToValueAtTime(world === "digital" ? 0.05 : 0.035, c.currentTime + 2);
+  out.gain.linearRampToValueAtTime(world === "neon" ? 0.05 : 0.035, c.currentTime + 2);
   const lp = c.createBiquadFilter();
   lp.type = "lowpass";
-  lp.frequency.value = world === "digital" ? 900 : 420;
+  lp.frequency.value = world === "neon" ? 900 : 420;
   lp.connect(out).connect(master!);
   const nodes: AudioScheduledSourceNode[] = [];
-  const base = world === "digital" ? 55 : 49;
+  const base = world === "neon" ? 55 : 49;
   for (const [mult, det] of [[1, -6], [1.5, 4], [2, 7]] as const) {
     const o = c.createOscillator();
-    o.type = world === "digital" ? "sawtooth" : "triangle";
+    o.type = world === "neon" ? "sawtooth" : "triangle";
     o.frequency.value = base * mult;
     o.detune.value = det;
     const g = c.createGain();
@@ -49,7 +49,7 @@ function startDrone() {
     o.start();
     nodes.push(o);
   }
-  if (world === "analog") {
+  if (world === "blueprint") {
     const n = c.createBufferSource();
     n.buffer = noiseBuffer(c, 2);
     n.loop = true;
@@ -89,7 +89,7 @@ export const sound = {
       drone = null;
     }
   },
-  setWorld(w: "digital" | "analog") {
+  setWorld(w: "neon" | "blueprint") {
     world = w;
     if (enabled) {
       drone?.stop();
@@ -108,8 +108,8 @@ export const sound = {
       const bp = c.createBiquadFilter();
       bp.type = "bandpass";
       bp.Q.value = 2.5;
-      bp.frequency.setValueAtTime(world === "digital" ? 300 : 2400, t);
-      bp.frequency.exponentialRampToValueAtTime(world === "digital" ? 4200 : 220, t + 1.1);
+      bp.frequency.setValueAtTime(world === "neon" ? 300 : 2400, t);
+      bp.frequency.exponentialRampToValueAtTime(world === "neon" ? 4200 : 220, t + 1.1);
       g.gain.setValueAtTime(0, t);
       g.gain.linearRampToValueAtTime(0.5, t + 0.25);
       g.gain.exponentialRampToValueAtTime(0.001, t + 1.3);
@@ -130,7 +130,7 @@ export const sound = {
       o.stop(t + 1);
       return;
     }
-    if (world === "digital") {
+    if (world === "neon") {
       const o = c.createOscillator();
       o.type = "sine";
       o.frequency.value = kind === "hover" ? 1760 : 1320;

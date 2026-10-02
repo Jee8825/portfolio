@@ -27,7 +27,7 @@ export function Hud() {
   const soundOn = useUI((s) => s.sound);
   const tc = useRef<HTMLSpanElement>(null);
   const bar = useRef<HTMLDivElement>(null);
-  const digital = world === "digital";
+  const night = world === "neon";
   const idx = Math.max(0, scenes.findIndex((s) => s.id === sceneId));
   const current = scenes[idx];
 
@@ -80,7 +80,7 @@ export function Hud() {
             aria-label="Back to top"
           >
             <span className="text-[0.8rem] tracking-[0.2em] text-ink">{profile.name.toUpperCase()}</span>
-            <span className="hidden text-ink-3 sm:inline">{digital ? "SYS://AI-DS-ENGINEER" : "AI & DATA SCIENCE — PRINT ED."}</span>
+            <span className="hidden text-ink-3 sm:inline">{night ? "AI & DATA SCIENCE · NIGHT CITY" : "AI & DATA SCIENCE · DWG NO. 01"}</span>
           </button>
 
           <nav aria-label="Scenes" className="hidden lg:block">
@@ -136,7 +136,7 @@ export function Hud() {
               </span>
               <span className="sr-only">Sound</span>
             </button>
-            <WorldSwitch digital={digital} />
+            <WorldSwitch night={night} />
           </div>
         </div>
       </header>
@@ -145,47 +145,57 @@ export function Hud() {
       <div className="theatre-only pointer-events-none fixed inset-x-0 bottom-0 z-40 px-4 pb-4 sm:px-6">
         <div className="flex items-end justify-between gap-6">
           <div className="label text-ink-3">
-            {digital ? (
+            {night ? (
               <span className="flex items-center gap-3">
                 <span className="flex items-center gap-1.5 text-ink">
-                  <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-t1" />
-                  REC
+                  <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-t2 shadow-[0_0_8px_var(--t2)]" />
+                  LIVE
+                </span>
+                <span className="hidden sm:inline">
+                  DISTRICT {current.code} · {current.label.toUpperCase()}
                 </span>
                 <span ref={tc} className="tabular-nums">00:00:00:00</span>
-                <span className="hidden sm:inline">
-                  SCN {current.code} / {current.label.toUpperCase()}
-                </span>
               </span>
             ) : (
-              <span className="flex items-center gap-3">
-                <span className="text-ink">
-                  PLATE {current.code} / {String(scenes.length).padStart(2, "0")}
+              <span className="flex items-stretch border border-ink/70 text-ink">
+                <span className="border-r border-ink/70 px-2 py-1">
+                  SHEET {current.code}/{String(scenes.length).padStart(2, "0")}
                 </span>
-                <span className="hidden sm:inline">{current.label.toUpperCase()}</span>
+                <span className="hidden px-2 py-1 sm:inline">{current.label.toUpperCase()} — SITE PLAN</span>
+                <span className="hidden border-l border-ink/70 px-2 py-1 md:inline">SCALE 1:500</span>
                 <span ref={tc} className="hidden tabular-nums">00:00:00:00</span>
               </span>
             )}
           </div>
           <div className="flex w-[34vw] max-w-[320px] flex-col items-end gap-2">
-            {!digital && (
-              <div className="flex gap-[3px]" aria-hidden>
-                {["var(--ink)", "var(--t1)", "var(--t2)", "var(--t3)"].map((c) => (
-                  <span key={c} className="h-2.5 w-4" style={{ background: c }} />
+            {!night && (
+              <div className="flex w-32 items-end" aria-hidden>
+                {/* scale bar */}
+                {[0, 1, 2, 3].map((k) => (
+                  <span key={k} className={`h-1.5 flex-1 border border-ink/80 ${k % 2 ? "bg-transparent" : "bg-ink/80"}`} />
                 ))}
               </div>
             )}
             <div className="relative h-px w-full bg-rule">
-              <div ref={bar} className="absolute inset-0 origin-left bg-ink" style={{ transform: "scaleX(0)" }} />
+              <div
+                ref={bar}
+                className={`absolute inset-0 origin-left ${night ? "bg-t2 shadow-[0_0_10px_var(--t2)]" : "bg-ink"}`}
+                style={{ transform: "scaleX(0)" }}
+              />
             </div>
           </div>
         </div>
       </div>
 
-      {/* frame corners: HUD brackets ↔ crop marks */}
+      {/* frame corners: neon brackets ↔ drawing registration marks */}
       <div className="theatre-only pointer-events-none fixed inset-3 z-40 sm:inset-4" aria-hidden>
-        {digital
-          ? ["left-0 top-14 border-l border-t", "right-0 top-14 border-r border-t", "left-0 bottom-12 border-l border-b", "right-0 bottom-12 border-r border-b"].map((c) => (
-              <span key={c} className={`absolute h-4 w-4 border-ink-3/60 ${c}`} />
+        {night
+          ? ["left-0 top-14 border-l border-t", "right-0 top-14 border-r border-t", "left-0 bottom-12 border-l border-b", "right-0 bottom-12 border-r border-b"].map((c, i) => (
+              <span
+                key={c}
+                className={`absolute h-5 w-5 ${c}`}
+                style={{ borderColor: i % 2 ? "var(--t2)" : "var(--t1)", filter: `drop-shadow(0 0 4px ${i % 2 ? "var(--t2)" : "var(--t1)"})` }}
+              />
             ))
           : ["left-0 top-14", "right-0 top-14", "left-0 bottom-12", "right-0 bottom-12"].map((c) => (
               <svg key={c} className={`absolute h-5 w-5 text-ink ${c}`} viewBox="0 0 20 20">
@@ -199,7 +209,7 @@ export function Hud() {
   );
 }
 
-function WorldSwitch({ digital }: { digital: boolean }) {
+function WorldSwitch({ night }: { night: boolean }) {
   return (
     <button
       onClick={(e) => {
@@ -207,20 +217,20 @@ function WorldSwitch({ digital }: { digital: boolean }) {
         switchWorld({ x: b.left + b.width / 2, y: b.top + b.height / 2 });
       }}
       onMouseEnter={() => sound.play("hover")}
-      aria-label={digital ? "Switch to the analog world (light)" : "Switch to the digital world (dark)"}
-      className="label group relative flex items-center gap-2 border border-ink px-2.5 py-1.5 text-ink"
+      aria-label={night ? "Switch to the blueprint world (day)" : "Switch to the neon world (night)"}
+      className={`label group relative flex items-center gap-2 border px-2.5 py-1.5 text-ink ${night ? "rounded-full border-t2/60 shadow-[0_0_14px_rgb(34_225_255_/_0.35)]" : "border-ink"}`}
     >
       <span aria-hidden className="relative inline-block h-3 w-3">
-        {digital ? (
-          <>
-            <span className="absolute inset-0 translate-x-[1px] rounded-full bg-t1 mix-blend-screen" />
-            <span className="absolute inset-0 -translate-x-[1px] rounded-full bg-t2 mix-blend-screen" />
-          </>
+        {night ? (
+          <span className="absolute inset-0 rounded-full border border-ink bg-[repeating-linear-gradient(0deg,var(--ink)_0_1px,transparent_1px_3px)]" />
         ) : (
-          <span className="absolute inset-0 border border-ink bg-[repeating-linear-gradient(0deg,var(--ink)_0_1px,transparent_1px_3px)]" />
+          <>
+            <span className="absolute inset-0 rounded-full bg-[#ff2e88]" />
+            <span className="absolute inset-[3px] rounded-full bg-[#22e1ff]" />
+          </>
         )}
       </span>
-      <span>{digital ? "Analog" : "Digital"}</span>
+      <span>{night ? "Blueprint" : "Neon"}</span>
     </button>
   );
 }

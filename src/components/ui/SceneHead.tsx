@@ -19,7 +19,7 @@ export function SceneHead({
   className?: string;
 }) {
   const root = useRef<HTMLDivElement>(null);
-  const digital = useUI((s) => s.world) === "digital";
+  const night = useUI((s) => s.world) === "neon";
 
   useGSAP(
     () => {
@@ -49,14 +49,14 @@ export function SceneHead({
   return (
     <div ref={root} className={className}>
       <div className="label mb-6 flex items-center gap-4 text-ink-2">
-        <span className="text-ink" data-scramble={digital ? `SCN_${code}` : `PLATE ${code}`}>
-          {digital ? `SCN_${code}` : `PLATE ${code}`}
+        <span className="text-ink" data-scramble={night ? `SCN_${code}` : `PLATE ${code}`}>
+          {night ? `SCN_${code}` : `PLATE ${code}`}
         </span>
         <span className="js-rule h-px flex-1 bg-rule" style={{ maxWidth: "8rem" }} />
         <span data-scramble={label.toUpperCase()}>{label.toUpperCase()}</span>
         {kicker && <span className="hidden text-ink-3 sm:inline">— {kicker}</span>}
       </div>
-      <h2 className="js-title display signal text-[clamp(2.4rem,6vw,5.6rem)] text-balance">{title}</h2>
+      <h2 className="js-title display text-[clamp(2rem,4.4vw,4.2rem)] text-balance">{title}</h2>
     </div>
   );
 }

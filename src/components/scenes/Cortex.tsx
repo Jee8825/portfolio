@@ -3,13 +3,14 @@
 import { useEffect, useRef } from "react";
 import { skillGroups, tiers } from "@/data/portfolio";
 import { FORMATIONS } from "@/lib/formations";
+import { DISTRICTS } from "@/lib/city";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { stage } from "@/lib/store";
 import { SceneHead } from "@/components/ui/SceneHead";
 
 const CORTEX = FORMATIONS.indexOf("cortex");
 
-/** 03 CORTEX — skills as a brain: each skill group is a cluster in the field, labelled live. */
+/** 03 CORTEX — skills as the city's highways: each skill group is a road, labelled live. */
 export function Cortex() {
   const root = useRef<HTMLElement>(null);
   const tags = useRef<(HTMLDivElement | null)[]>([]);
@@ -19,9 +20,10 @@ export function Cortex() {
     const tick = () => {
       const near = Math.max(0, 1 - Math.abs(stage.scene - CORTEX) * 1.6);
       tags.current.forEach((el, i) => {
-        const a = stage.anchors[i];
+        // anchors: [hub, ...districts, ...highways] — skills label their highway
+        const a = stage.anchors[1 + DISTRICTS.length + i];
         if (!el || !a) return;
-        const front = a.z > -1.2 ? 1 : 0.35; // clusters behind the brain dim
+        const front = a.z > 0 ? 1 : 0;
         el.style.transform = `translate3d(${a.x}px, ${a.y}px, 0) translate(-50%, -50%)`;
         el.style.opacity = String(near * front);
         el.style.zIndex = a.z > 0 ? "2" : "1";
@@ -57,7 +59,7 @@ export function Cortex() {
         code="03"
         label="Cortex"
         kicker="skills"
-        title={<>Six regions. One network.</>}
+        title={<>Six highways. One city.</>}
         className="max-w-3xl"
       />
 

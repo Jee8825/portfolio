@@ -17,7 +17,7 @@ type Arch = Chapter["architecture"];
 /** Architecture as a live circuit: edges draw in on scroll, packets flow along them. */
 export function ArchDiagram({ arch, id }: { arch: Arch; id: string }) {
   const root = useRef<HTMLDivElement>(null);
-  const digital = useUI((s) => s.world) === "digital";
+  const night = useUI((s) => s.world) === "neon";
 
   const layout = useMemo(() => {
     const cols = Math.max(...arch.nodes.map((n) => n.col)) + 1;
@@ -91,7 +91,7 @@ export function ArchDiagram({ arch, id }: { arch: Arch; id: string }) {
   return (
     <div ref={root} className="panel p-4 sm:p-6" style={{ ["--panel-accent" as string]: "var(--t2)" }}>
       <div className="label mb-4 flex justify-between text-ink-3">
-        <span>{digital ? "SYS.ARCH" : "Fig. — architecture"}</span>
+        <span>{night ? "SYS.ARCH" : "Fig. — architecture"}</span>
         <span>{arch.nodes.length} nodes · {arch.edges.length} links</span>
       </div>
 
@@ -118,7 +118,7 @@ export function ArchDiagram({ arch, id }: { arch: Arch; id: string }) {
               strokeWidth={1.2}
               markerEnd={`url(#arrow-${id})`}
             />
-            <circle className="js-packet" r={digital ? 3 : 3.4} fill={ink(e.tier)}>
+            <circle className="js-packet" r={night ? 3 : 3.4} fill={ink(e.tier)}>
               <animateMotion dur={`${2.2 + (e.i % 3) * 0.5}s`} begin={`${(e.i * 0.37) % 2}s`} repeatCount="indefinite">
                 <mpath href={`#e-${id}-${e.i}`} />
               </animateMotion>
@@ -146,8 +146,8 @@ export function ArchDiagram({ arch, id }: { arch: Arch; id: string }) {
               width={NW}
               height={NH}
               fill="var(--paper)"
-              stroke={digital ? "var(--rule-strong)" : "var(--ink)"}
-              strokeWidth={digital ? 1 : 1.4}
+              stroke={night ? "var(--rule-strong)" : "var(--ink)"}
+              strokeWidth={night ? 1 : 1.4}
             />
             <rect x={x} y={y} width={4} height={NH} fill={ink(n.tier)} />
             <text x={x + 16} y={y + 27} fontSize={FS} fill="var(--ink)" fontFamily="var(--font-sans)" fontWeight={600} {...fit(n.label, FS, 0.56)}>

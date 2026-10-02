@@ -11,7 +11,7 @@ export function Log() {
   const root = useRef<HTMLElement>(null);
   const track = useRef<HTMLOListElement>(null);
   const quick = useUI((s) => s.quick);
-  const digital = useUI((s) => s.world) === "digital";
+  const night = useUI((s) => s.world) === "neon";
 
   useGSAP(
     () => {
@@ -61,7 +61,7 @@ export function Log() {
             >
               <div className="label mb-6 flex items-center justify-between text-ink-3">
                 <span className={`t${e.tier}`}>
-                  {digital ? `0x${(i + 1).toString(16).padStart(2, "0").toUpperCase()}` : `No. ${i + 1}`} · {e.kind}
+                  {night ? `0x${(i + 1).toString(16).padStart(2, "0").toUpperCase()}` : `No. ${i + 1}`} · {e.kind}
                 </span>
                 <span>{e.when}</span>
               </div>

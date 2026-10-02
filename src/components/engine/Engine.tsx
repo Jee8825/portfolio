@@ -15,8 +15,8 @@ export function Engine() {
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") Object.assign(window, { __stage: stage, __ui: ui });
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const world = (document.documentElement.dataset.world as World) || "digital";
-    stage.world = world === "analog" ? 1 : 0;
+    const world = (document.documentElement.dataset.world as World) || "neon";
+    stage.world = world === "blueprint" ? 1 : 0;
     ui.set({
       world,
       reducedMotion: reduced,
@@ -107,6 +107,19 @@ export function Director() {
           }),
         );
       }
+      // progress inside the section once it owns the screen (drives elevator rides)
+      triggers.push(
+        ScrollTrigger.create({
+          trigger: el,
+          start: "top 15%",
+          end: "bottom bottom",
+          onUpdate: (self) => {
+            if (self.isActive) stage.sub = self.progress;
+          },
+          onEnter: () => (stage.sub = 0),
+          onEnterBack: () => (stage.sub = 1),
+        }),
+      );
       const id = el.dataset.scene;
       if (id) {
         triggers.push(
