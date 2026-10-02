@@ -30,7 +30,7 @@ const fragment = /* glsl */ `
       float drip = smoothstep(front, front - 0.25, r) * (1.0 - uMelt);
       uv.y += drip * 0.015 * (0.5 + 0.5 * sin(uv.x * 80.0));
     }
-    float ca = (1.0 - uDay) * 0.0012 + (uMelt > 0.0 && uMelt < 1.0 ? 0.006 * (1.0 - uMelt) : 0.0);
+    float ca = (1.0 - uDay) * 0.0006 + (uMelt > 0.0 && uMelt < 1.0 ? 0.006 * (1.0 - uMelt) : 0.0);
     vec3 col = vec3(
       texture2D(inputBuffer, uv + vec2(ca, 0.0)).r,
       texture2D(inputBuffer, uv).g,
@@ -39,7 +39,8 @@ const fragment = /* glsl */ `
     vec2 c = uv0 - 0.5;
     if (uDay < 0.5) {
       col *= 1.0 - dot(c, c) * 0.9;
-      col += (rnd(uv0 * uRes + fract(uTime) * 91.0) - 0.5) * 0.035;
+      // fine, slow grain (a fast per-frame grain reads as flicker)
+      col += (rnd(floor(uv0 * uRes / 2.0) + floor(uTime * 12.0)) - 0.5) * 0.018;
     }
     outputColor = vec4(col, inputColor.a);
   }

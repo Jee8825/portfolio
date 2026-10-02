@@ -5,7 +5,8 @@ import { useThree } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
 import * as THREE from "three";
 import { PALETTE } from "@/lib/palette";
-import { Blocks } from "./Blocks";
+import { Skyline } from "./Skyline";
+import { Sky, StreetLamps } from "./SkyStreets";
 import { Landmarks } from "./Landmarks";
 import { Avenue, Ground, Highways } from "./Roads";
 import { Rain } from "./Atmosphere";
@@ -13,9 +14,9 @@ import { CameraRig } from "./CameraRig";
 import { useWorld } from "./useWorld";
 
 const QUALITY = {
-  1: { blocks: 150, reflect: false, glass: 1, rain: 900 },
-  2: { blocks: 240, reflect: false, glass: 2, rain: 1600 },
-  3: { blocks: 330, reflect: true, glass: 2, rain: 2600 },
+  1: { lots: 150, far: 60, reflect: false, glass: 1, rain: 900 },
+  2: { lots: 250, far: 120, reflect: false, glass: 2, rain: 1600 },
+  3: { lots: 340, far: 180, reflect: true, glass: 2, rain: 2600 },
 } as const;
 
 /** The Data City. Night = neon, glass and wet streets. Day = the same city as a blueprint. */
@@ -46,7 +47,9 @@ export function City({ tier }: { tier: 1 | 2 | 3 }) {
       <Ground reflect={q.reflect} />
       <Highways />
       <Avenue />
-      <Blocks count={q.blocks} />
+      <Sky />
+      <Skyline lots={q.lots} farLots={q.far} />
+      <StreetLamps />
       <Landmarks glassTier={q.glass} />
       <Rain count={q.rain} />
     </>

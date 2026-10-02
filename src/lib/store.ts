@@ -19,6 +19,8 @@ export const stage = {
   pointer: { x: 0, y: 0 },
   /** 0..1 progress through the section currently on screen (elevator rides, exploded views) */
   sub: 0,
+  /** per-shot travel (0 before the section, 1 after it, progress inside) — keyed by data-formation */
+  travel: [] as number[],
   /** 0..1 liquid-melt ripple progress and its origin in uv space */
   melt: 0,
   meltAt: { x: 0.9, y: 0.95 },

@@ -60,37 +60,141 @@ export const HUB: V3 = [0, 0, 0]; // the "you" tower (MEMORY)
 export const ANTENNA: V3 = [0, 0, -34]; // TRANSMIT
 
 /* ------------------------------------------------------------------ */
-/*  Filler blocks: the rest of the skyline (instanced)                 */
+/*  The skyline: real architecture on a street grid (instanced)         */
 /* ------------------------------------------------------------------ */
-export type Block = { x: number; z: number; w: number; d: number; h: number; tier: Tier; seed: number };
+/** One box of a building (podium, shaft, setback, crown) — instanced. */
+export type Section = { x: number; y: number; z: number; w: number; h: number; d: number; tier: Tier; seed: number; trim: number };
+/** Rooftop clutter: tanks, HVAC, masts. */
+export type Prop = { x: number; y: number; z: number; w: number; h: number; d: number; kind: 0 | 1 | 2 };
+/** Neon signs bolted to facades. */
+export type Sign = { x: number; y: number; z: number; w: number; h: number; ry: number; tier: Tier; seed: number };
+export type Beacon = { x: number; y: number; z: number; seed: number };
 
-export function buildBlocks(count: number): Block[] {
-  const r = rng(2026);
-  const out: Block[] = [];
-  const keepClear: { c: V3; r: number }[] = [
-    { c: HUB, r: 5.5 },
-    ...DISTRICTS.map((d) => ({ c: d.center, r: 4.2 })),
-    ...OUTSKIRTS.map((d) => ({ c: d.center, r: 3 })),
-    { c: ANTENNA, r: 5 },
-  ];
+export type Skyline = { sections: Section[]; props: Prop[]; signs: Sign[]; beacons: Beacon[] };
+
+export function buildCity(lots: number, far = false): Skyline {
+  const r = rng(far ? 4242 : 2026);
+  const sections: Section[] = [];
+  const props: Prop[] = [];
+  const signs: Sign[] = [];
+  const beacons: Beacon[] = [];
+  const keepClear: { c: V3; r: number }[] = far
+    ? []
+    : [
+        { c: HUB, r: 5.5 },
+        ...DISTRICTS.map((d) => ({ c: d.center, r: 4.4 })),
+        ...OUTSKIRTS.map((d) => ({ c: d.center, r: 3 })),
+        { c: ANTENNA, r: 5 },
+      ];
+  const used = new Set<string>();
   let guard = 0;
-  while (out.length < count && guard++ < count * 40) {
-    // grid-snapped lots so streets read as streets
-    const gx = Math.round((r() * 2 - 1) * 23) * 2.2;
-    const gz = Math.round((r() * 2 - 1) * 23) * 2.2;
-    if (Math.abs(gx) < 1.2 || Math.abs(gz) < 1.2) continue; // main avenues
-    if (Math.abs(gx - gz) < 1.5 || Math.abs(gx + gz) < 1.5) continue; // diagonal boulevards
-    if (keepClear.some(({ c, r: rad }) => Math.hypot(gx - c[0], gz - c[2]) < rad)) continue;
-    // keep every camera sightline open: no block between a shot's camera and its subject
-    if (SHOTS.some((sh) => sh.pos[1] < 20 && distToSegment(gx, gz, sh.pos, sh.target) < 3.2)) continue;
-    if (out.some((b) => b.x === gx && b.z === gz)) continue;
+  let made = 0;
+  while (made < lots && guard++ < lots * 60) {
+    let gx: number, gz: number;
+    if (far) {
+      const a = r() * Math.PI * 2;
+      const rad = 62 + r() * 55;
+      gx = Math.round((Math.cos(a) * rad) / 2.6) * 2.6;
+      gz = Math.round((Math.sin(a) * rad) / 2.6) * 2.6;
+    } else {
+      gx = Math.round((r() * 2 - 1) * 23) * 2.2;
+      gz = Math.round((r() * 2 - 1) * 23) * 2.2;
+      if (Math.abs(gx) < 1.2 || Math.abs(gz) < 1.2) continue; // main avenues
+      if (Math.abs(gx - gz) < 1.5 || Math.abs(gx + gz) < 1.5) continue; // diagonal boulevards
+      if (keepClear.some(({ c, r: rad }) => Math.hypot(gx - c[0], gz - c[2]) < rad)) continue;
+      if (SHOTS.some((sh) => sh.pos[1] < 20 && distToSegment(gx, gz, sh.pos, sh.target) < 3.2)) continue;
+    }
+    const key = `${gx},${gz}`;
+    if (used.has(key)) continue;
+    used.add(key);
+    made++;
+
     const dist = Math.hypot(gx, gz);
-    const tall = Math.max(0.6, 7.5 - dist * 0.12) * (0.35 + Math.pow(r(), 2.2) * 1.4);
-    const w = 1.2 + r() * 0.7;
-    const d = 1.2 + r() * 0.7;
-    out.push({ x: gx, z: gz, w, d, h: tall, tier: (1 + Math.floor(r() * 3)) as Tier, seed: r() });
+    const tier = (1 + Math.floor(r() * 3)) as Tier;
+    const seed = r();
+    const lot = far ? 2.2 : 1.9;
+    const w = lot * (0.62 + r() * 0.3);
+    const d = lot * (0.62 + r() * 0.3);
+    // taller toward downtown; a few landmarks punch through
+    let H = far ? 4 + Math.pow(r(), 1.6) * 22 : Math.max(0.9, 8.5 - dist * 0.13) * (0.35 + Math.pow(r(), 2) * 1.5);
+    if (!far && r() < 0.06) H *= 1.8;
+    const trim = r() < 0.3 ? 1 : 0;
+    const push = (x: number, y: number, z: number, sw: number, sh: number, sd: number) =>
+      sections.push({ x, y, z, w: sw, h: sh, d: sd, tier, seed, trim });
+
+    const kind = far ? 0 : H < 2.2 ? 1 : r() < 0.45 ? 0 : r() < 0.6 ? 2 : 3;
+    let top = 0;
+    let topW = w,
+      topD = d;
+    if (kind === 0) {
+      // podium + shaft + setback
+      const ph = Math.min(1.2, H * 0.18);
+      push(gx, ph / 2, gz, w * 1.12, ph, d * 1.12);
+      const sh = H * 0.78;
+      push(gx, ph + sh / 2, gz, w, sh, d);
+      const bh = H - ph - sh;
+      topW = w * 0.68;
+      topD = d * 0.68;
+      push(gx, ph + sh + bh / 2, gz, topW, bh, topD);
+      top = H;
+    } else if (kind === 1) {
+      // wide low slab
+      push(gx, H / 2, gz, w * 1.15, H, d * 1.15);
+      top = H;
+      topW = w * 1.15;
+      topD = d * 1.15;
+    } else if (kind === 2) {
+      // stepped ziggurat
+      let y = 0;
+      for (let k = 0; k < 3; k++) {
+        const hh = H * [0.5, 0.3, 0.2][k];
+        const s = [1, 0.78, 0.56][k];
+        push(gx, y + hh / 2, gz, w * s, hh, d * s);
+        y += hh;
+        topW = w * s;
+        topD = d * s;
+      }
+      top = y;
+    } else {
+      // slim spire tower
+      push(gx, H / 2, gz, w * 0.72, H, d * 0.72);
+      topW = w * 0.72;
+      topD = d * 0.72;
+      top = H;
+    }
+
+    // rooftop clutter
+    if (!far) {
+      const n = Math.floor(r() * 3);
+      for (let k = 0; k < n; k++) {
+        const pk = Math.floor(r() * 3) as 0 | 1 | 2;
+        const px = gx + (r() - 0.5) * topW * 0.6;
+        const pz = gz + (r() - 0.5) * topD * 0.6;
+        if (pk === 0) props.push({ x: px, y: top + 0.18, z: pz, w: 0.28, h: 0.36, d: 0.28, kind: 0 }); // water tank
+        else if (pk === 1) props.push({ x: px, y: top + 0.09, z: pz, w: 0.42, h: 0.18, d: 0.3, kind: 1 }); // HVAC
+        else props.push({ x: px, y: top + 0.6, z: pz, w: 0.04, h: 1.2, d: 0.04, kind: 2 }); // mast
+      }
+      if (H > 6.5) beacons.push({ x: gx + topW * 0.4, y: top + 0.08, z: gz + topD * 0.4, seed: r() });
+      // a neon sign on the street-facing side of some buildings
+      if (H > 2.4 && r() < 0.24) {
+        const vertical = r() < 0.6;
+        const face = Math.floor(r() * 4);
+        const sw = vertical ? 0.32 : Math.min(w * 0.8, 1.3);
+        const sh = vertical ? Math.min(1.8, H * 0.35) : 0.36;
+        const sy = Math.min(top - sh / 2 - 0.3, 1.4 + r() * (top * 0.5));
+        const ox = [0, w / 2 + 0.03, 0, -w / 2 - 0.03][face];
+        const oz = [d / 2 + 0.03, 0, -d / 2 - 0.03, 0][face];
+        signs.push({ x: gx + ox, y: sy, z: gz + oz, w: sw, h: sh, ry: [0, Math.PI / 2, Math.PI, -Math.PI / 2][face], tier, seed: r() });
+      }
+    }
   }
-  return out;
+  return { sections, props, signs, beacons };
+}
+
+/** @deprecated kept for the films bundle; the site uses buildCity */
+export type Block = { x: number; z: number; w: number; d: number; h: number; tier: Tier; seed: number };
+export function buildBlocks(count: number): Block[] {
+  return buildCity(count).sections.map((s) => ({ x: s.x, z: s.z, w: s.w, d: s.d, h: s.y + s.h / 2, tier: s.tier, seed: s.seed }));
 }
 
 function distToSegment(x: number, z: number, a: V3, b: V3) {

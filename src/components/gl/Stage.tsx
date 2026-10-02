@@ -14,7 +14,8 @@ function Composer({ tier }: { tier: 1 | 2 | 3 }) {
   const { gl, scene, camera, size } = useThree();
 
   const chain = useMemo(() => {
-    const composer = new EffectComposer(gl, { frameBufferType: HalfFloatType });
+    // MSAA inside the composer: without it the window grids and fine lines shimmer
+    const composer = new EffectComposer(gl, { frameBufferType: HalfFloatType, multisampling: tier === 3 ? 4 : tier === 2 ? 2 : 0 });
     const bloom = new BloomEffect({
       intensity: 1.15,
       luminanceThreshold: 0.82,
@@ -67,7 +68,7 @@ export default function Stage() {
         frameloop="never"
         flat
         dpr={[1, t === 3 ? 1.75 : t === 2 ? 1.5 : 1]}
-        gl={{ antialias: t >= 2, alpha: false, powerPreference: "high-performance", stencil: false }}
+        gl={{ antialias: false, alpha: false, powerPreference: "high-performance", stencil: false, depth: true }}
         camera={{ fov: 40, position: [0, 62, 48], near: 0.1, far: 400 }}
       >
         <City tier={t} />

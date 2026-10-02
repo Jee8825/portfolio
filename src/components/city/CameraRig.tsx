@@ -24,18 +24,23 @@ export const ANCHOR_POINTS: THREE.Vector3[] = [
 export function CameraRig() {
   const { camera, size } = useThree();
   const cam = camera as THREE.PerspectiveCamera;
-  const s = useRef({ scene: 0, sub: 0, px: 0, py: 0, lat: 0, vy: 0 });
+  const s = useRef({ scene: 0, px: 0, py: 0, lat: 0, vy: 0, t: 0, travel: [] as number[] });
   const v = useMemo(
     () => ({ pa: new THREE.Vector3(), pb: new THREE.Vector3(), ta: new THREE.Vector3(), tb: new THREE.Vector3(), pos: new THREE.Vector3(), tgt: new THREE.Vector3(), tmp: new THREE.Vector3() }),
     [],
   );
 
   useFrame((_, delta) => {
+    if (process.env.NODE_ENV !== "production") (window as unknown as { __cam: THREE.Camera }).__cam = cam;
     const dt = Math.min(delta, 1 / 20);
     const st = s.current;
     const target = stage.boot < 1 ? stage.boot : Math.max(1, stage.scene);
     st.scene += (target - st.scene) * (1 - Math.exp(-dt * 3.2));
-    st.sub += (stage.sub - st.sub) * (1 - Math.exp(-dt * 4));
+    // every shot keeps its own smoothed travel, so blends never switch formulas mid-flight
+    for (let k = 0; k < SHOTS.length; k++) {
+      const want = stage.travel[k] ?? 0;
+      st.travel[k] = (st.travel[k] ?? want) + (want - (st.travel[k] ?? want)) * (1 - Math.exp(-dt * 5));
+    }
     st.px += (Math.min(1, Math.abs(stage.pointer.x)) * Math.sign(stage.pointer.x) - st.px) * (1 - Math.exp(-dt * 2));
     st.py += (Math.min(1, Math.abs(stage.pointer.y)) * Math.sign(stage.pointer.y) - st.py) * (1 - Math.exp(-dt * 2));
 
@@ -46,9 +51,8 @@ export function CameraRig() {
     const m = ease(sc - i0);
     const A: Shot = SHOTS[i0];
     const B: Shot = SHOTS[i1];
-    // the section we're in contributes its travel; the one we're leaving is fully travelled
-    const subA = i0 === i1 ? st.sub : 1;
-    const subB = m > 0.999 ? st.sub : 0;
+    const subA = st.travel[i0] ?? 0;
+    const subB = st.travel[i1] ?? 0;
     const add = (out: THREE.Vector3, base: number[], rise: number[] | undefined, k: number) =>
       out.set(base[0] + (rise?.[0] ?? 0) * k, base[1] + (rise?.[1] ?? 0) * k, base[2] + (rise?.[2] ?? 0) * k);
     add(v.pa, A.pos, A.rise, subA);
@@ -62,7 +66,8 @@ export function CameraRig() {
     v.pos.y += Math.sin(m * Math.PI) * Math.min(hop * 0.22, 14);
 
     // hand-held drift + pointer parallax
-    const t = performance.now() * 0.001;
+    st.t = (st.t ?? 0) + dt;
+    const t = st.t;
     v.pos.x += Math.sin(t * 0.21) * 0.35 + st.px * 0.9;
     v.pos.y += Math.sin(t * 0.17) * 0.2 + st.py * 0.5;
 
@@ -76,12 +81,8 @@ export function CameraRig() {
     const lat = THREE.MathUtils.lerp(A.lateral ?? 0, B.lateral ?? 0, m);
     st.lat += ((wide ? lat : 0) - st.lat) * (1 - Math.exp(-dt * 4));
     st.vy += ((wide ? 0 : lat > 0 ? 0.2 : 0) - st.vy) * (1 - Math.exp(-dt * 4));
-    if (Math.abs(st.lat) > 0.001 || Math.abs(st.vy) > 0.001) {
-      cam.setViewOffset(size.width, size.height, -st.lat * size.width, st.vy * size.height, size.width, size.height);
-    } else if (cam.view) {
-      cam.clearViewOffset();
-    }
-    cam.updateProjectionMatrix();
+    // always offset (even by 0) so the projection never toggles between two code paths
+    cam.setViewOffset(size.width, size.height, -st.lat * size.width, st.vy * size.height, size.width, size.height);
 
     // project label anchors for the DOM
     ANCHOR_POINTS.forEach((p, i) => {

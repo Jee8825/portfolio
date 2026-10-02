@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable react-hooks/immutability -- three.js objects are mutated per frame by design */
 
-import { useMemo, useRef } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { ANTENNA, DISTRICTS, HUB, OUTSKIRTS, type District, type V3 } from "@/lib/city";
@@ -96,6 +96,44 @@ function Part({ geometry, material, position, rotation, scale, day = "edges", ti
   );
 }
 
+/** Floor slabs inside a glass shaft, edged with a faint light strip, so towers read as inhabited. */
+function FloorPlates({ shape, w, d = w, h, y0 = 0, step = 0.62, tier = 2 }: { shape: "cyl" | "box"; w: number; d?: number; h: number; y0?: number; step?: number; tier?: Tier }) {
+  const ref = useRef<THREE.InstancedMesh>(null);
+  const group = useRef<THREE.Group>(null);
+  const n = Math.max(1, Math.floor(h / step) - 1);
+  const geo = useMemo(
+    () => (shape === "cyl" ? new THREE.CylinderGeometry(w * 0.92, w * 0.92, 0.05, 28) : new THREE.BoxGeometry(w * 0.9, 0.05, d * 0.9)),
+    [shape, w, d],
+  );
+  const mat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#120d20",
+        metalness: 0.4,
+        roughness: 0.6,
+        emissive: new THREE.Color(PALETTE.neon[`t${tier}`]),
+        emissiveIntensity: 0.55,
+      }),
+    [tier],
+  );
+  useLayoutEffect(() => {
+    const m = new THREE.Matrix4();
+    for (let i = 0; i < n; i++) {
+      m.makeTranslation(0, y0 + (i + 1) * step, 0);
+      ref.current!.setMatrixAt(i, m);
+    }
+    ref.current!.instanceMatrix.needsUpdate = true;
+  }, [n, step, y0]);
+  useWorld((isDay) => {
+    if (group.current) group.current.visible = !isDay;
+  });
+  return (
+    <group ref={group}>
+      <instancedMesh ref={ref} args={[geo, mat, n]} />
+    </group>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  The hub: "you" — Recall's three tiers stacked as a tower (MEMORY)  */
 /* ------------------------------------------------------------------ */
@@ -127,6 +165,8 @@ function Hub({ glassTier }: { glassTier: number }) {
   return (
     <group position={HUB}>
       <Part geometry={geo.base} material={m.glass} position={[0, 1.6, 0]} tier={3} />
+      <FloorPlates shape="box" w={4} h={3.2} tier={3} />
+      <FloorPlates shape="cyl" w={1.7} h={3.6} y0={3.2} tier={2} />
       <Part geometry={geo.coreA} material={cores[0]} position={[0, 1.6, 0]} day="mark" tier={3} />
       <Part geometry={geo.mid} material={m.glass} position={[0, 5.0, 0]} tier={2} />
       <Part geometry={geo.coreB} material={cores[1]} position={[0, 5.0, 0]} day="mark" tier={2} />
@@ -167,6 +207,7 @@ function Gyro({ d, m }: { d: District; m: ReturnType<typeof useMaterials> }) {
   return (
     <group>
       <Part geometry={geo.shaft} material={m.glass} position={[0, h / 2, 0]} tier={d.tier} />
+      <FloorPlates shape="cyl" w={1.15} h={h} tier={d.tier} />
       <Part geometry={geo.core} material={m.neon[3]} position={[0, h / 2, 0]} day="mark" tier={3} />
       <group ref={rings} position={[0, h * 0.62, 0]}>
         <group rotation={[0.3, 0, 0]}>
@@ -248,6 +289,9 @@ function Fleet({ d, m }: { d: District; m: ReturnType<typeof useMaterials> }) {
         return (
           <group key={i}>
             <Part geometry={geo.tower} material={m.glass} position={[x, hh / 2, z]} scale={[1, hh, 1]} tier={1} />
+            <group position={[x, 0, z]}>
+              <FloorPlates shape="box" w={1.3} h={hh} step={0.55} tier={isOdd ? 1 : 2} />
+            </group>
             <Part geometry={geo.core} material={m.neon[isOdd ? 1 : 2]} position={[x, hh / 2, z]} scale={[1, hh * 0.92, 1]} day="mark" tier={isOdd ? 1 : 2} />
           </group>
         );
@@ -318,6 +362,7 @@ function Outskirt({ c, tier, glassTier }: { c: V3; tier: Tier; glassTier: number
   return (
     <group position={c}>
       <Part geometry={geo.body} material={m.glass} position={[0, 3, 0]} tier={tier} />
+      <FloorPlates shape="box" w={2.2} h={6} tier={tier} />
       <Part geometry={geo.cap} material={m.neon[tier]} position={[0, 6.05, 0]} day="mark" tier={tier} />
     </group>
   );

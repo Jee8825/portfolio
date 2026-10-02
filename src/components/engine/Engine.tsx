@@ -114,10 +114,11 @@ export function Director() {
           start: "top 15%",
           end: "bottom bottom",
           onUpdate: (self) => {
+            stage.travel[f] = self.progress;
             if (self.isActive) stage.sub = self.progress;
           },
-          onEnter: () => (stage.sub = 0),
-          onEnterBack: () => (stage.sub = 1),
+          onLeave: () => (stage.travel[f] = 1),
+          onLeaveBack: () => (stage.travel[f] = 0),
         }),
       );
       const id = el.dataset.scene;
@@ -137,6 +138,8 @@ export function Director() {
       ScrollTrigger.sort();
       ScrollTrigger.refresh();
     });
+    // web fonts change line lengths → section heights; re-measure once they land
+    document.fonts?.ready.then(() => ScrollTrigger.refresh());
     return () => {
       cancelAnimationFrame(id);
       triggers.forEach((t) => t.kill());
