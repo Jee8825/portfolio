@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>Portfolio promo — Jeevanandh</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="assets/film.css">
+    <style>
+      .stack { display: flex; flex-direction: column; justify-content: center; gap: 26px; }
+      .bottom { justify-content: flex-end; padding-bottom: 150px; }
+      #role { color: var(--ink-2); text-align: center; position: absolute; left: 0; right: 0; top: 700px; font-size: 26px; }
+      #headline { font-size: 112px; max-width: 1350px; }
+      #sub { color: var(--ink-2); font-size: 34px; max-width: 980px; line-height: 1.45; }
+      #mem-intro { font-size: 64px; max-width: 900px; }
+      .tier { display: grid; grid-template-columns: 330px 1fr; gap: 28px; align-items: baseline; border-top: 1px solid var(--ink-3); padding-top: 18px; width: 900px; }
+      .tier h3 { font-size: 52px; }
+      .tier .note { color: var(--ink-3); font-size: 18px; letter-spacing: 0.06em; text-transform: none; }
+      .big { font-size: 150px; }
+      .chap-name { font-size: 220px; }
+      .chap-thesis { font-size: 56px; max-width: 900px; }
+      #cortex { display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 130px; gap: 34px; }
+      #cortex h2 { font-size: 92px; }
+      #groups { display: grid; grid-template-columns: repeat(3, 520px); gap: 14px 30px; }
+      #groups p { display: flex; gap: 14px; align-items: center; color: var(--ink); }
+      #groups i { display: block; width: 14px; height: 14px; }
+      #end-name { font-size: 200px; }
+      #end-meta { display: flex; flex-direction: column; gap: 14px; color: var(--ink-2); }
+      #end-links { display: flex; gap: 44px; color: var(--ink); }
+      .wipe-dark { position: absolute; inset: 0; z-index: 35; background: #07080a; clip-path: circle(0px at 1780px 70px); }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-b9vf" id="root" class="film" data-world="digital" data-composition-id="promo" data-start="0" data-width="1920" data-height="1080" data-duration="42">
+      <canvas data-hf-id="hf-4dkf" id="field" class="field" width="1920" height="1080"></canvas>
+
+      <p data-hf-id="hf-gv7i" id="role" class="label">AI &amp; Data Science Engineer</p>
+
+      <div data-hf-id="hf-dmnc" id="s-head" class="layer stack bottom">
+        <p data-hf-id="hf-hqwj" id="headline" class="display signal">Headline</p>
+        <p data-hf-id="hf-svy4" id="sub">Sub</p>
+      </div>
+
+      <div data-hf-id="hf-ifwg" id="s-mem" class="layer stack">
+        <p data-hf-id="hf-5h43" id="mem-intro" class="display signal">Intro</p>
+        <div data-hf-id="hf-lesq" id="tiers" class="stack" style="gap: 22px; margin-top: 24px"></div>
+      </div>
+
+      <div data-hf-id="hf-iuu7" id="s-same" class="layer stack"><p data-hf-id="hf-wbm3" id="same" class="display signal big">Same mind.</p></div>
+      <div data-hf-id="hf-tew8" id="s-diff" class="layer stack"><p data-hf-id="hf-ji5u" id="diff" class="display signal big">Different medium.</p></div>
+
+      <div data-hf-id="hf-vwrh" id="s-works"></div>
+
+      <div data-hf-id="hf-vj1u" id="cortex" class="layer">
+        <h2 data-hf-id="hf-05mo" id="cortex-title" class="display signal">Six regions. One network.</h2>
+        <div data-hf-id="hf-psid" id="groups"></div>
+      </div>
+
+      <div data-hf-id="hf-gr75" id="s-end" class="layer stack bottom">
+        <p data-hf-id="hf-ohah" id="end-avail" class="label t3">Open to AI / ML engineering internships &amp; roles</p>
+        <p data-hf-id="hf-7rrc" id="end-name" class="display signal">Jeevanandh</p>
+        <div data-hf-id="hf-d587" id="end-meta" class="label">
+          <span data-hf-id="hf-z3rp" id="end-role">AI &amp; Data Science Engineer</span>
+          <div data-hf-id="hf-mvf0" id="end-links"><span data-hf-id="hf-714c" id="end-site">site</span><span data-hf-id="hf-fp7k" id="end-gh">github</span><span data-hf-id="hf-x54e" id="end-hf">hf</span></div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-it37" id="wipe-paper" class="wipe"></div>
+      <div data-hf-id="hf-jhz6" id="wipe-dark" class="wipe-dark"></div>
+      <div data-hf-id="hf-431g" class="lens"></div>
+
+      <audio data-hf-id="hf-64rg" id="a-drone" src="assets/sfx/drone.wav" data-start="0" data-duration="42" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-i7vm" id="a-boot" src="assets/sfx/boot.wav" data-start="0" data-duration="1.6" data-volume="0.8"></audio>
+      <audio data-hf-id="hf-mlzb" id="a-whoosh-1" src="assets/sfx/whoosh.wav" data-start="0.8" data-duration="1.4" data-volume="0.7"></audio>
+      <audio data-hf-id="hf-y5iv" id="a-tick-1" src="assets/sfx/tick.wav" data-start="2.2" data-duration="0.12" data-volume="0.7"></audio>
+      <audio data-hf-id="hf-w9t5" id="a-hit-0" src="assets/sfx/hit.wav" data-start="3.75" data-duration="1.2" data-volume="0.7"></audio>
+      <audio data-hf-id="hf-w1ns" id="a-whoosh-2" src="assets/sfx/whoosh.wav" data-start="8.1" data-duration="1.4" data-volume="0.55"></audio>
+      <audio data-hf-id="hf-0b5t" id="a-tick-2" src="assets/sfx/tick.wav" data-start="9.8" data-duration="0.12" data-volume="0.7"></audio>
+      <audio data-hf-id="hf-ai4x" id="a-tick-3" src="assets/sfx/tick.wav" data-start="11.0" data-duration="0.12" data-volume="0.7"></audio>
+      <audio data-hf-id="hf-6uyr" id="a-tick-4" src="assets/sfx/tick.wav" data-start="12.2" data-duration="0.12" data-volume="0.7"></audio>
+      <audio data-hf-id="hf-wewm" id="a-riser-1" src="assets/sfx/riser.wav" data-start="11.6" data-duration="2.2" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-go25" id="a-whoosh-3" src="assets/sfx/whoosh.wav" data-start="13.55" data-duration="1.4" data-volume="0.9"></audio>
+      <audio data-hf-id="hf-noag" id="a-print" src="assets/sfx/print.wav" data-start="14.3" data-duration="0.8" data-volume="0.9"></audio>
+      <audio data-hf-id="hf-k4zl" id="a-hit-1" src="assets/sfx/hit.wav" data-start="16.4" data-duration="1.2" data-volume="0.8"></audio>
+      <audio data-hf-id="hf-fvcv" id="a-hit-2" src="assets/sfx/hit.wav" data-start="20.4" data-duration="1.2" data-volume="0.8"></audio>
+      <audio data-hf-id="hf-yk8g" id="a-hit-3" src="assets/sfx/hit.wav" data-start="24.4" data-duration="1.2" data-volume="0.8"></audio>
+      <audio data-hf-id="hf-5juh" id="a-hit-4" src="assets/sfx/hit.wav" data-start="28.4" data-duration="1.2" data-volume="0.8"></audio>
+      <audio data-hf-id="hf-qeis" id="a-whoosh-4" src="assets/sfx/whoosh.wav" data-start="31.6" data-duration="1.4" data-volume="0.9"></audio>
+      <audio data-hf-id="hf-tw29" id="a-boot-2" src="assets/sfx/boot.wav" data-start="32.25" data-duration="1.6" data-volume="0.6"></audio>
+      <audio data-hf-id="hf-k2j6" id="a-riser-2" src="assets/sfx/riser.wav" data-start="34.4" data-duration="2.2" data-volume="0.5"></audio>
+      <audio data-hf-id="hf-xz3r" id="a-hit-5" src="assets/sfx/hit.wav" data-start="36.55" data-duration="1.2" data-volume="0.95"></audio>
+      <audio data-hf-id="hf-sj34" id="a-whoosh-5" src="assets/sfx/whoosh.wav" data-start="40.9" data-duration="1.1" data-volume="0.6"></audio>
+    </div>
+
+    <script type="module">
+      import { site, createField, track, morphs, steps, scramble, words, chars } from "./assets/engine.js";
+
+      const DUR = 42;
+      const $ = (id) => document.getElementById(id);
+      const featured = site.projects.filter((p) => p.featured && p.chapter);
+      const FLIP = 14.35; // digital → analog
+      const BACK = 32.0; // analog → digital
+
+      async function build() {
+        const P = site.profile;
+
+        /* ---------- content (all from portfolio.ts) ---------- */
+        $("role").textContent = P.role;
+        $("headline").textContent = P.headline;
+        $("sub").textContent = P.subheadline;
+        $("mem-intro").textContent = site.about.intro;
+        site.about.tiers.forEach((t) => {
+          const meta = site.tiers[t.tier];
+          const row = document.createElement("div");
+          row.className = "tier";
+          row.innerHTML = `<div><p class="label t${t.tier}">T${t.tier} · ${meta.name}</p><p class="label note">${meta.note}</p></div><h3 class="display">${t.title}</h3>`;
+          $("tiers").appendChild(row);
+        });
+        featured.forEach((p, i) => {
+          const s = document.createElement("div");
+          s.className = "layer stack";
+          s.id = `w${i}`;
+          s.innerHTML = `<p class="label" style="display:flex;gap:14px;align-items:center"><i style="display:block;width:14px;height:14px;background:var(--t${p.tier})"></i><span id="w${i}-code">Chapter 0${i + 1} · ${p.status}</span></p><p class="display signal chap-name" id="w${i}-name">${p.name}</p><p class="display chap-thesis" id="w${i}-thesis">${p.chapter.thesis}</p>`;
+          $("s-works").appendChild(s);
+        });
+        site.skillGroups.forEach((g) => {
+          const row = document.createElement("p");
+          row.className = "label";
+          row.innerHTML = `<i style="background: var(--t${g.tier})"></i>${g.title}`;
+          $("groups").appendChild(row);
+        });
+        $("end-role").textContent = `${P.role} · ${P.college}`;
+        $("end-site").textContent = site.seo.url.replace("https://", "");
+        $("end-gh").textContent = "github.com/Jee8825";
+        $("end-hf").textContent = "huggingface.co/Jee0088";
+
+        await document.fonts.ready;
+        // chapter names share the left column with the objects
+        const g = document.createElement("canvas").getContext("2d");
+        g.font = '560 220px "Fraunces Variable"';
+        featured.forEach((p, i) => {
+          const w = g.measureText(p.name).width * 0.965;
+          $(`w${i}-name`).style.fontSize = `${Math.min(220, Math.floor((220 * 820) / w))}px`;
+        });
+        const field = await createField($("field"));
+
+        /* ---------- field: a pure function of time ---------- */
+        const shape = morphs(
+          [
+            [0.9, 2.6, "boot", "signal"],
+            [8.2, 9.8, "signal", "memory"],
+            [15.6, 16.9, "memory", featured[0].chapter.formation],
+            [19.6, 20.9, featured[0].chapter.formation, featured[1].chapter.formation],
+            [23.6, 24.9, featured[1].chapter.formation, featured[2].chapter.formation],
+            [27.6, 28.9, featured[2].chapter.formation, featured[3].chapter.formation],
+            [32.0, 33.6, featured[3].chapter.formation, "cortex"],
+            [35.8, 37.2, "cortex", "transmit"],
+          ],
+          "boot",
+        );
+        const world = steps([[0, 0], [FLIP, 1], [BACK, 0]]);
+        const glitch = track([[0, 0.5], [0.3, 0, "out"], [0.85, 0], [1, 0.6, "in"], [1.4, 0, "out"],
+          [13.3, 0], [14.2, 1, "in"], [14.9, 0, "out"], [31.4, 0], [31.95, 1, "in"], [32.6, 0, "out"], [41.3, 0], [41.85, 1, "in"], [42, 0.4]]);
+        const scatter = track([[0, 0], [13.4, 0], [14.3, 0.75, "in"], [15.8, 0, "expo"], [31.5, 0], [31.98, 0.7, "in"], [33.2, 0, "expo"], [41.4, 0], [42, 0.4, "in"]]);
+        const focus = steps([[0, 0], [9.8, 1], [11.0, 2], [12.2, 3], [13.3, 0]]);
+        const dim = track([[0, 1], [3.6, 1], [4.2, 0.55], [8, 0.55], [8.6, 1]]);
+        const offY = track([[0, 0], [3.6, 0], [4.4, 1.6, "out"], [8.1, 1.6], [8.8, 0, "out"]]);
+        const pulse = track([[0, 0], [36.5, 0], [38.2, 1, "out"], [38.21, 0]]);
+        const camX = track([[0, 0], [8, 0.4], [16, -0.5], [32, 0.5], [42, 0]]);
+        const st = { focusAmt: 0, camY: 0, offX: null, offY: null };
+        let fa = 0;
+        const root = $("root");
+        const draw = (t) => {
+          const w = world(t);
+          const f = focus(t);
+          fa = f > 0 ? 1 : 0;
+          Object.assign(st, shape(t), {
+            world: w, glitch: glitch(t), scatter: scatter(t), focus: f || 1, focusAmt: fa,
+            dim: dim(t), pulse: pulse(t), camX: camX(t),
+            offY: t > 3.6 && t < 8.8 ? offY(t) : null,
+          });
+          root.dataset.world = w ? "analog" : "digital";
+          field.render(t, st);
+        };
+
+        /* ---------- DOM choreography ---------- */
+        const tl = gsap.timeline({ paused: true });
+        const layers = ["#role", "#s-head", "#s-mem", "#s-same", "#s-diff", "#cortex", "#s-end", ...featured.map((_, i) => `#w${i}`)];
+        gsap.set(layers, { autoAlpha: 0 });
+
+        // 0 – 3.6 · boot → name
+        tl.set("#role", { autoAlpha: 1 }, 2.15);
+        scramble(tl, $("role"), 2.2, 0.8, { seed: 2 });
+        tl.to("#role", { autoAlpha: 0, duration: 0.3 }, 3.5);
+
+        // 3.8 – 8 · thesis of the person
+        const hw = words($("headline"));
+        tl.set("#s-head", { autoAlpha: 1 }, 3.75)
+          .fromTo(hw, { yPercent: 110 }, { yPercent: 0, duration: 1, stagger: 0.05, ease: "expo.out" }, 3.8)
+          .fromTo("#sub", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.8, ease: "expo.out" }, 5.3)
+          .to("#s-head", { autoAlpha: 0, y: -30, duration: 0.4, ease: "power2.in" }, 7.8);
+
+        // 8.3 – 13 · memory tiers (field spotlights each stratum)
+        const mw = words($("mem-intro"));
+        tl.set("#s-mem", { autoAlpha: 1 }, 8.3)
+          .fromTo(mw, { yPercent: 110 }, { yPercent: 0, duration: 0.9, stagger: 0.04, ease: "expo.out" }, 8.35);
+        [...$("tiers").children].forEach((row, i) => {
+          tl.fromTo(row, { autoAlpha: 0, x: -24 }, { autoAlpha: 1, x: 0, duration: 0.6, ease: "expo.out" }, 9.8 + i * 1.2);
+        });
+        tl.to("#s-mem", { autoAlpha: 0, duration: 0.35, ease: "power2.in" }, 12.8);
+
+        // 12.9 – 15.6 · the switch
+        const sw = chars($("same"));
+        tl.set("#s-same", { autoAlpha: 1 }, 13.2)
+          .fromTo(sw, { yPercent: 110 }, { yPercent: 0, duration: 0.55, stagger: 0.025, ease: "expo.out" }, 13.22)
+          .to("#s-same", { autoAlpha: 0, duration: 0.15 }, 14.1)
+          .fromTo("#wipe-paper", { clipPath: "circle(0px at 1780px 70px)" }, { clipPath: "circle(2300px at 1780px 70px)", duration: 0.55, ease: "power3.in" }, 13.8)
+          .to("#wipe-paper", { autoAlpha: 0, duration: 0.45, ease: "power2.out" }, FLIP + 0.05);
+        const dw = chars($("diff"));
+        tl.set("#s-diff", { autoAlpha: 1 }, 14.55)
+          .fromTo(dw, { yPercent: 110 }, { yPercent: 0, duration: 0.7, stagger: 0.025, ease: "expo.out" }, 14.6)
+          .to("#s-diff", { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, 15.5);
+
+        // 15.6 – 31.6 · four chapters, in print
+        featured.forEach((p, i) => {
+          const at = 15.6 + i * 4;
+          const nc = chars($(`w${i}-name`));
+          tl.set(`#w${i}`, { autoAlpha: 1 }, at + 0.6);
+          scramble(tl, $(`w${i}-code`), at + 0.65, 0.5, { chars: "abcdefghijklmnopqrstuvwxyz", seed: 40 + i });
+          tl.fromTo(nc, { yPercent: 115 }, { yPercent: 0, duration: 0.9, stagger: 0.035, ease: "expo.out" }, at + 0.8)
+            .fromTo(`#w${i}-thesis`, { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "expo.out" }, at + 1.5)
+            .to(`#w${i}`, { autoAlpha: 0, duration: 0.3, ease: "power2.in" }, at + 3.65);
+        });
+
+        // 31.6 – 35.6 · back to digital: the cortex
+        tl.fromTo("#wipe-dark", { clipPath: "circle(0px at 1780px 70px)" }, { clipPath: "circle(2300px at 1780px 70px)", duration: 0.5, ease: "power3.in" }, 31.5)
+          .to("#wipe-dark", { autoAlpha: 0, duration: 0.45, ease: "power2.out" }, BACK + 0.05);
+        const cw = words($("cortex-title"));
+        tl.set("#cortex", { autoAlpha: 1 }, 32.6)
+          .fromTo(cw, { yPercent: 110 }, { yPercent: 0, duration: 0.9, stagger: 0.05, ease: "expo.out" }, 32.65)
+          .fromTo("#groups p", { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.45, stagger: 0.12, ease: "expo.out" }, 33.3)
+          .to("#cortex", { autoAlpha: 0, duration: 0.35, ease: "power2.in" }, 35.5);
+
+        // 36 – 42 · transmit
+        const en = chars($("end-name"));
+        tl.set("#s-end", { autoAlpha: 1 }, 36.4);
+        scramble(tl, $("end-avail"), 36.45, 0.9, { seed: 77 });
+        tl.fromTo(en, { yPercent: 115 }, { yPercent: 0, duration: 1.1, stagger: 0.04, ease: "expo.out" }, 36.55)
+          .fromTo("#end-meta", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "expo.out" }, 37.6);
+
+        const clock = { t: 0 };
+        tl.fromTo(clock, { t: 0 }, { t: DUR, duration: DUR, ease: "none", onUpdate: () => draw(clock.t) }, 0);
+        draw(0);
+        window.__timelines["promo"] = tl;
+      }
+
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["promo-field"] = build();
+    </script>
+  </body>
+</html>

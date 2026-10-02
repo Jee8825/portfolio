@@ -1,0 +1,8 @@
+shared/build/
+*/assets/
+*/renders/
+.thumbnails/
+*/.hyperframes/
+*/snapshots/
+*/snap-*/
+*/.waveform-cache/

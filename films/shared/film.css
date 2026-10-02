@@ -1,0 +1,162 @@
+/* Shared film styles — the site's two worlds at 1920×1080. Mirrors src/app/globals.css tokens. */
+@font-face {
+  font-family: "Fraunces Variable";
+  src: url("fonts/fraunces.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-display: block;
+}
+@font-face {
+  font-family: "Space Grotesk Variable";
+  src: url("fonts/space-grotesk.woff2") format("woff2-variations");
+  font-weight: 300 700;
+  font-display: block;
+}
+@font-face {
+  font-family: "Recursive Variable";
+  src: url("fonts/recursive.woff2") format("woff2-variations");
+  font-weight: 300 1000;
+  font-display: block;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #07080a;
+}
+
+.film {
+  --paper: #07080a;
+  --ink: #e8ecef;
+  --ink-2: #a3abb5;
+  --ink-3: #7a828d;
+  --t1: #ff48b0;
+  --t2: #2e8bff;
+  --t3: #ffe800;
+  --t1-text: #ff6fc2;
+  --t2-text: #6aaeff;
+  --t3-text: #ffe800;
+  --soft: 0;
+  --wonk: 0;
+  --casl: 0;
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  color: var(--ink);
+  font-family: "Space Grotesk Variable", system-ui, sans-serif;
+}
+.film[data-world="analog"] {
+  --paper: #f2ede4;
+  --ink: #161514;
+  --ink-2: #4a4743;
+  --ink-3: #615c54;
+  --t2: #0078bf;
+  --t1-text: #c41a7c;
+  --t2-text: #005f99;
+  --t3-text: #161514;
+  --soft: 100;
+  --wonk: 1;
+  --casl: 1;
+}
+
+.field {
+  position: absolute;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  display: block;
+}
+
+/* the world's lens over everything */
+.lens {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+}
+.film[data-world="digital"] .lens {
+  background:
+    radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.45) 100%),
+    repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.1) 3px);
+}
+.film[data-world="analog"] .lens {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+  opacity: 0.4;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  padding: 120px 140px;
+}
+
+.display {
+  font-family: "Fraunces Variable", Georgia, serif;
+  font-weight: 560;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  font-variation-settings: "opsz" 144, "SOFT" var(--soft), "WONK" var(--wonk);
+}
+.film[data-world="digital"] .display.signal {
+  text-shadow:
+    -0.02em 0 0 rgb(255 72 176 / 0.55),
+    0.02em 0 0 rgb(46 139 255 / 0.55),
+    0 0 0.35em rgb(232 236 239 / 0.2);
+}
+.film[data-world="analog"] .display.signal {
+  text-shadow: 0.045em 0.03em 0 rgb(255 72 176 / 0.9);
+}
+.label {
+  font-family: "Recursive Variable", ui-monospace, monospace;
+  font-variation-settings: "MONO" 1, "CASL" var(--casl);
+  font-size: 22px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.t1 { color: var(--t1-text); }
+.t2 { color: var(--t2-text); }
+.t3 { color: var(--t3-text); }
+
+/* word / char masks for rise-in */
+.w-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.w-in {
+  display: inline-block;
+}
+
+/* diagram */
+.nbox { fill: var(--paper); stroke: rgb(232 236 239 / 0.3); stroke-width: 1.4; }
+.film[data-world="analog"] .nbox { stroke: var(--ink); stroke-width: 1.8; }
+.nlabel { font: 600 19px "Space Grotesk Variable", sans-serif; fill: var(--ink); }
+.nsub { font: 400 13px "Recursive Variable", monospace; fill: var(--ink-3); font-variation-settings: "MONO" 1; }
+.elabel {
+  font: 400 14px "Recursive Variable", monospace;
+  fill: var(--ink-2);
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 5px;
+}
+
+/* the switch: a sheet of the other world sweeping over the frame */
+.wipe {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  background: #f2ede4;
+  clip-path: circle(0px at 1780px 70px);
+}

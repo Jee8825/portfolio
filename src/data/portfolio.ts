@@ -46,6 +46,8 @@ export type ArchNode = {
 export type Chapter = {
   /** one-line thesis shown huge at the top of the chapter */
   thesis: string;
+  /** two short lines that cold-open the HyperFrames trailer */
+  hook: [string, string];
   problem: string;
   insight: string;
   metrics: { value: string; label: string; note?: string }[];
@@ -236,6 +238,7 @@ export const projects: Project[] = [
     links: [{ label: "GitHub", href: "https://github.com/Jee8825/recall" }],
     chapter: {
       thesis: "The memory layer that knows how to forget.",
+      hook: ["Agent memory only ever grows.", "Stale facts crowd out fresh ones."],
       problem:
         "Agent memory layers like Mem0, Zep and Letta are additive — memory accumulates forever, stale facts compete with fresh ones, and nothing tracks why a belief is held.",
       insight:
@@ -292,6 +295,7 @@ export const projects: Project[] = [
     links: [{ label: "GitHub", href: "https://github.com/Jee8825/FinDesk" }],
     chapter: {
       thesis: "It doesn't just close your books. It defends your cash.",
+      hook: ["Books close late.", "Cash crunches arrive as surprises."],
       problem:
         "Indian SMEs with 10–200 people run finance on Tally or Zoho plus spreadsheets. Reconciliation is manual, late payments go unchased, and cash crunches arrive as surprises.",
       insight:
@@ -351,6 +355,7 @@ export const projects: Project[] = [
     ],
     chapter: {
       thesis: "One machine drifts. The whole fleet notices.",
+      hook: ["Every machine is watched alone.", "So nobody sees the fleet."],
       problem:
         "Predictive maintenance watches each machine alone against a fixed threshold, so it reacts late and can't see a machine diverging from its peers or a bad tool batch hitting the whole line.",
       insight:
@@ -404,6 +409,7 @@ export const projects: Project[] = [
     links: [{ label: "GitHub", href: "https://github.com/Jee8825/CognitiaAI" }],
     chapter: {
       thesis: "A mentor that speaks your language — literally.",
+      hook: ["Coding help speaks English.", "Many learners think in their own language."],
       problem:
         "Students in Tier-2 and Tier-3 cities learn to code from English-only material with no one to ask, so they stall on the same concepts without feedback.",
       insight:

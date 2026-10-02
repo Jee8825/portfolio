@@ -28,7 +28,8 @@ Next.js 16 (App Router, `experimental.viewTransition`) · TypeScript · Tailwind
 GSAP 3.15 (ScrollTrigger, SplitText, ScrambleText — all free) + `@gsap/react` · Lenis ·
 three.js + @react-three/fiber 9 + `postprocessing` · detect-gpu · self-hosted fonts via
 `@fontsource-variable/*` (Fraunces = display, Space Grotesk = text, Recursive = mono) ·
-Web Audio (synthesized, opt-in). HyperFrames for rendered films (planned, `public/films`).
+Web Audio (synthesized, opt-in). HyperFrames films live in `films/` (see `films/README.md`):
+they bundle the site's own formations/shaders/content, render to `public/films/`.
 
 ## Golden rule — content is decoupled from UI
 **All site content lives in [`src/data/portfolio.ts`](src/data/portfolio.ts)**: `profile`,
