@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable react-hooks/immutability -- three.js objects are mutated per frame by design */
 
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { createContext, useContext, useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { ANTENNA, DISTRICTS, HUB, OUTSKIRTS, type District, type V3 } from "@/lib/city";
@@ -71,12 +71,38 @@ type PartProps = {
   angle?: number;
 };
 
+/* ------------------------------------------------------------------ */
+/*  Exploded view: while you ride a tower's elevator its layers part     */
+/* ------------------------------------------------------------------ */
+const EXPLODE = 0.6; // how far layers separate (fraction of their height)
+const ExplodeCtx = createContext<{ e: number } | null>(null);
+
+/** A group whose height is pushed apart by the tower's explode factor. */
+function Lift({ y, children }: { y: number; children: ReactNode }) {
+  const ex = useContext(ExplodeCtx);
+  const ref = useRef<THREE.Group>(null);
+  useFrame(() => {
+    if (ref.current && ex) ref.current.position.y = y * (1 + ex.e * EXPLODE);
+  });
+  return (
+    <group ref={ref} position={[0, y, 0]}>
+      {children}
+    </group>
+  );
+}
+
 /** One mesh that is glass/chrome/neon by night and a drafted outline by day. */
 function Part({ geometry, material, position, rotation, scale, day = "edges", tier = 2, angle = 18 }: PartProps) {
   const mesh = useRef<THREE.Mesh>(null);
   const lines = useRef<THREE.LineSegments>(null);
   const edges = useMemo(() => (day === "edges" || day === "faint" ? new THREE.EdgesGeometry(geometry, angle) : null), [geometry, day, angle]);
   const glassy = material instanceof THREE.MeshPhysicalMaterial;
+  const ex = useContext(ExplodeCtx);
+  const holder = useRef<THREE.Group>(null);
+  const baseY = position?.[1] ?? 0;
+  useFrame(() => {
+    if (ex && holder.current) holder.current.position.y = baseY * (1 + ex.e * EXPLODE);
+  });
   useWorld((isDay) => {
     if (!mesh.current) return;
     if (day === "mark") mesh.current.material = isDay ? DAY_MARK[tier] : material;
@@ -89,7 +115,7 @@ function Part({ geometry, material, position, rotation, scale, day = "edges", ti
     }
   });
   return (
-    <group position={position} rotation={rotation} scale={scale}>
+    <group ref={holder} position={position} rotation={rotation} scale={scale}>
       <mesh ref={mesh} geometry={geometry} material={material} />
       {edges && <lineSegments ref={lines} geometry={edges} material={day === "faint" ? EDGE_FAINT : EDGE} visible={false} />}
     </group>
@@ -124,6 +150,19 @@ function FloorPlates({ shape, w, d = w, h, y0 = 0, step = 0.62, tier = 2 }: { sh
     }
     ref.current!.instanceMatrix.needsUpdate = true;
   }, [n, step, y0]);
+  const ex = useContext(ExplodeCtx);
+  const last = useRef(-1);
+  useFrame(() => {
+    const e = ex?.e ?? 0;
+    if (Math.abs(e - last.current) < 0.002 || !ref.current) return;
+    last.current = e;
+    const m = new THREE.Matrix4();
+    for (let i = 0; i < n; i++) {
+      m.makeTranslation(0, (y0 + (i + 1) * step) * (1 + e * EXPLODE), 0);
+      ref.current.setMatrixAt(i, m);
+    }
+    ref.current.instanceMatrix.needsUpdate = true;
+  });
   useWorld((isDay) => {
     if (group.current) group.current.visible = !isDay;
   });
@@ -209,7 +248,8 @@ function Gyro({ d, m }: { d: District; m: ReturnType<typeof useMaterials> }) {
       <Part geometry={geo.shaft} material={m.glass} position={[0, h / 2, 0]} tier={d.tier} />
       <FloorPlates shape="cyl" w={1.15} h={h} tier={d.tier} />
       <Part geometry={geo.core} material={m.neon[3]} position={[0, h / 2, 0]} day="mark" tier={3} />
-      <group ref={rings} position={[0, h * 0.62, 0]}>
+      <Lift y={h * 0.62}>
+      <group ref={rings}>
         <group rotation={[0.3, 0, 0]}>
           <Part geometry={geo.r1} material={m.neon[3]} day="faint" />
         </group>
@@ -220,6 +260,7 @@ function Gyro({ d, m }: { d: District; m: ReturnType<typeof useMaterials> }) {
           <Part geometry={geo.r3} material={episodic} day="faint" />
         </group>
       </group>
+      </Lift>
     </group>
   );
 }
@@ -330,19 +371,31 @@ function Orb({ d, m }: { d: District; m: ReturnType<typeof useMaterials> }) {
       <Part geometry={geo.shaft} material={m.chrome} position={[0, (h * 0.55) / 2, 0]} tier={2} />
       <Part geometry={geo.sphere} material={m.glass} position={[0, h * 0.62, 0]} angle={40} tier={2} />
       <Part geometry={geo.core} material={m.neon[3]} position={[0, h * 0.62, 0]} day="mark" tier={3} />
-      <group ref={rings} position={[0, h * 0.62, 0]}>
-        <Part geometry={geo.ring} material={m.neon[1]} rotation={[1.2, 0, 0]} day="faint" />
-        <Part geometry={geo.ring} material={m.neon[1]} rotation={[1.9, 0.4, 0]} scale={1.15} day="faint" />
-      </group>
+      <Lift y={h * 0.62}>
+        <group ref={rings}>
+          <Part geometry={geo.ring} material={m.neon[1]} rotation={[1.2, 0, 0]} day="faint" />
+          <Part geometry={geo.ring} material={m.neon[1]} rotation={[1.9, 0.4, 0]} scale={1.15} day="faint" />
+        </group>
+      </Lift>
       <Part geometry={geo.stream} material={m.neon[1]} day="mark" tier={1} />
     </group>
   );
 }
 
-function DistrictTower({ d, glassTier }: { d: District; glassTier: number }) {
+function DistrictTower({ d, glassTier, shot }: { d: District; glassTier: number; shot: number }) {
   const m = useMaterials(glassTier);
+  // a stable mutable box (not a ref) so it can be handed down through context
+  const ex = useMemo(() => ({ e: 0 }), []);
+  useFrame((_, dt) => {
+    // explode while this tower's chapter is on screen, peaking mid-ride
+    const near = Math.max(0, 1 - Math.abs(stage.scene - shot) * 2);
+    const tr = stage.travel[shot] ?? 0;
+    const want = near * Math.min(1, Math.max(0, (tr - 0.15) * 2.2)) * (1 - Math.max(0, (tr - 0.85) * 4));
+    ex.e += (want - ex.e) * (1 - Math.exp(-Math.min(dt, 0.05) * 3));
+  });
   const plinth = useMemo(() => new THREE.CylinderGeometry(5.2, 5.4, 0.25, 48), []);
   return (
+    <ExplodeCtx.Provider value={ex}>
     <group position={d.center}>
       <Part geometry={plinth} material={m.dark} position={[0, 0.12, 0]} day="faint" tier={d.tier} />
       {d.shape === "gyro" && <Gyro d={d} m={m} />}
@@ -350,6 +403,7 @@ function DistrictTower({ d, glassTier }: { d: District; glassTier: number }) {
       {d.shape === "fleet" && <Fleet d={d} m={m} />}
       {d.shape === "orb" && <Orb d={d} m={m} />}
     </group>
+    </ExplodeCtx.Provider>
   );
 }
 
@@ -417,8 +471,8 @@ export function Landmarks({ glassTier }: { glassTier: number }) {
   return (
     <group>
       <Hub glassTier={glassTier} />
-      {DISTRICTS.map((d) => (
-        <DistrictTower key={d.slug} d={d} glassTier={glassTier} />
+      {DISTRICTS.map((d, i) => (
+        <DistrictTower key={d.slug} d={d} glassTier={glassTier} shot={4 + i} />
       ))}
       {OUTSKIRTS.map((o) => (
         <Outskirt key={o.slug} c={o.center} tier={o.tier} glassTier={glassTier} />

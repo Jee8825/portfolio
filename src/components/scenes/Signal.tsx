@@ -58,7 +58,7 @@ export function Signal() {
       className="relative flex min-h-[100svh] flex-col justify-end px-4 pb-20 pt-28 sm:px-6 sm:pb-24"
     >
       {/* the name, as a sign over the skyline */}
-      <h1 className="js-sign display signal sign pointer-events-none absolute inset-x-4 top-[22%] text-center text-[clamp(2.6rem,10.5vw,10.5rem)] uppercase sm:top-[24%]">
+      <h1 className="js-sign display signal sign pointer-events-none absolute inset-x-4 top-[22%] whitespace-nowrap text-center text-[clamp(1.5rem,8.6vw,10.5rem)] uppercase sm:top-[24%]">
         {profile.name}
         <span className="sr-only"> — {profile.role}</span>
       </h1>

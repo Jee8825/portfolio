@@ -106,7 +106,7 @@ export function Hud() {
             </ol>
           </nav>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex shrink-0 items-center gap-1.5">
             <button
               onClick={toggleQuick}
               aria-pressed={quick}
@@ -119,7 +119,7 @@ export function Hud() {
               onClick={toggleSound}
               aria-pressed={soundOn}
               aria-label={soundOn ? "Mute sound" : "Turn sound on"}
-              className="label theatre-only border border-rule px-2.5 py-1.5 text-ink-2 hover:text-ink"
+              className="label theatre-only hidden border border-rule px-2.5 py-1.5 text-ink-2 hover:text-ink sm:inline-block"
             >
               <span aria-hidden className="inline-flex h-3 items-end gap-[2px] align-middle">
                 {[0.5, 1, 0.7, 0.9].map((h, i) => (
@@ -230,7 +230,7 @@ function WorldSwitch({ night }: { night: boolean }) {
           </>
         )}
       </span>
-      <span>{night ? "Blueprint" : "Neon"}</span>
+      <span className="hidden sm:inline">{night ? "Blueprint" : "Neon"}</span>
     </button>
   );
 }

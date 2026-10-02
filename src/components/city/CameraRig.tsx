@@ -61,6 +61,8 @@ export function CameraRig() {
     add(v.tb, B.target, B.rise, subB);
     v.pos.lerpVectors(v.pa, v.pb, m);
     v.tgt.lerpVectors(v.ta, v.tb, m);
+    // phones: step back so the subject sits behind the copy, not on top of it
+    if (size.width / size.height < 1.15) v.pos.sub(v.tgt).multiplyScalar(1.4).add(v.tgt);
     // flights between distant shots climb over the skyline
     const hop = v.pa.distanceTo(v.pb);
     v.pos.y += Math.sin(m * Math.PI) * Math.min(hop * 0.22, 14);

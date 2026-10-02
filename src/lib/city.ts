@@ -253,7 +253,7 @@ const towerShot = (i: number): Shot => {
     pos: [c[0] + ox, 4.5, c[2] + oz],
     target: [c[0], h * 0.45, c[2]],
     lateral: 0.22,
-    rise: [0, h * 0.5, 0],
+    rise: [0, h * 0.95, 0],
     fov: 36,
   };
 };
